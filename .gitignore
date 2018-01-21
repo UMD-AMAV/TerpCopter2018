@@ -31,6 +31,7 @@
 *.out
 *.app
 
-# Catkin_Make directories
+# Catkin_Make directories and files
 /build/
 /devel/
+.catkin_workspace
