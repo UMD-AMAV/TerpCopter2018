@@ -1,0 +1,8 @@
+prefix=/home/austin/Documents/AMAV/TerpCopter2018/devel
+
+Name: arduino
+Description: Description of arduino
+Version: 1.0.0
+Cflags: 
+Libs: -L/home/austin/Documents/AMAV/TerpCopter2018/devel/lib 
+Requires: 

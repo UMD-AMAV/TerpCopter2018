@@ -1,0 +1,2 @@
+arduino:commander:px4_interface:rosserial/rosserial:rosserial/rosserial_arduino:rosserial/rosserial_client:rosserial/rosserial_embeddedlinux:rosserial/rosserial_mbed:rosserial/rosserial_msgs:rosserial/rosserial_python:rosserial/rosserial_server:rosserial/rosserial_test:rosserial/rosserial_tivac:rosserial/rosserial_windows:rosserial/rosserial_xbee:vision
+-DCATKIN_DEVEL_PREFIX=/home/austin/Documents/AMAV/TerpCopter2018/devel -DCMAKE_INSTALL_PREFIX=/home/austin/Documents/AMAV/TerpCopter2018/install -G Unix Makefiles
