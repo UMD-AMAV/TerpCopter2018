@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
 		// which are ignored by turtlesim, default to 0
 		std_msgs::UInt16 msg;
 		msg.data = 20;
+		msg.data = 20;
 
 		// Publish the message
 		pub_health.publish(msg);
@@ -32,4 +33,3 @@ int main(int argc, char **argv) {
 		rate.sleep();
 	}
 }
-
