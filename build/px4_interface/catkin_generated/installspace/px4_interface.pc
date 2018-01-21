@@ -1,8 +1,0 @@
-prefix=/home/austin/Documents/AMAV/TerpCopter2018/install
-
-Name: px4_interface
-Description: Description of px4_interface
-Version: 1.0.0
-Cflags: 
-Libs: -L/home/austin/Documents/AMAV/TerpCopter2018/install/lib 
-Requires: 

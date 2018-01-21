@@ -1,8 +1,0 @@
-prefix=/home/austin/Documents/AMAV/TerpCopter2018/install
-
-Name: rosserial_msgs
-Description: Description of rosserial_msgs
-Version: 0.7.7
-Cflags: -I/home/austin/Documents/AMAV/TerpCopter2018/install/include
-Libs: -L/home/austin/Documents/AMAV/TerpCopter2018/install/lib 
-Requires: message_runtime
