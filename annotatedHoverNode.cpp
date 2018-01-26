@@ -368,7 +368,7 @@ param7          	float	    Parameter 7, as defined by MAV_CMD enum.
 
 while(ros::ok()){
     
-    if(current_state.mode != "OFFBOARD", // if MAV not in OFFBOARD mode 
+    if(current_state.mode != "OFFBOARD" // if MAV not in OFFBOARD mode 
             && (ros::Time::now()-last_request >ros::Duration(5.0)))
             //seconds condition will make sure the following service calls
             // occur every 5 seconds.. so as to not overload the FCU. Logic here is similar to rate.sleep()
@@ -403,7 +403,7 @@ while(ros::ok()){
             
         local_pos_pub.publish(pose); // publish goal altitude of 2 meters
         ros::spinOnce();  // execute outstanding callbacks
-        rate.sleep()       // maintain loop rate
+        rate.sleep();       // maintain loop rate
     } // exit while loop
     
     return 0;
