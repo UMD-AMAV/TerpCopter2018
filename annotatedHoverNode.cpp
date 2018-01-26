@@ -55,7 +55,7 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg){
 // Furthermore, it is a constant pointer, therefore, 
 // you can modify the value that the pointer points to 
 // but not the pointer value itself. References to current_state
-// in main will be referemces to the actual incomming State object.
+// in main will be references to the actual incomming State object.
 
 
 
