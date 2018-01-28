@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="AMAV">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+       <geometry>
+            <heightmap>
+              <uri>model://AMAV/materials/textures/terrain.png</uri>
+              <size>23 11 0.3</size>
+              <pos>0 0 0</pos>
+            </heightmap>
+            <!-- add red target -->
+            <!--<heightmap>
+              <uri>model://AMAV/materials/targets/Red.png</uri>
+              <size>1 1 0.3</size>
+              <pos>3.5 2 0.3</pos>
+            </heightmap>-->
+       </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <heightmap>
+             <use_terrain_paging>false</use_terrain_paging>
+              <texture>
+                <diffuse>model://AMAV/materials/textures/tarmac.png</diffuse>
+                <normal>model://AMAV/materials/textures/flat_normal.png</normal>
+                <size>1</size>
+              </texture>
+              <uri>model://AMAV/materials/textures/terrain.png</uri>
+              <size>23 11 0.3</size>
+              <pos>0 0 0</pos>
+              <!--<uri>model://AMAV/materials/targets/Red.png</uri>
+              <size>1 1 0.3</size>
+              <pos>3.5 2 0.3</pos>-->
+           </heightmap>
+         </geometry>
+       </visual>
+    </link>
+  </model>
+</sdf>
