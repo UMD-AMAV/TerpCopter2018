@@ -1,0 +1,4 @@
+<launch>
+  <node name="terpcopter_vision" pkg="terpcopter_vision" type="terpcopter_black_square.py" output="screen" />
+  
+</launch>

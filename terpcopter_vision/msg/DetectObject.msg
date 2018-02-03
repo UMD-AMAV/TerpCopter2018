@@ -1,0 +1,7 @@
+bool detection_flag
+uint16 center_x_pixel
+uint16 center_y_pixel 
+uint16 width
+uint16 height
+float32 area
+float32 arc_length
