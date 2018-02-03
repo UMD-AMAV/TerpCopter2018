@@ -1,8 +1,0 @@
-<launch>
-    <node
-        name="px4"
-        pkg="px4_interface"
-        type="px4"
-        output="screen"
-    />
-</launch>
