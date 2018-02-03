@@ -1,0 +1,7 @@
+
+bool flag
+int16  min_position
+int16  max_position
+int16 step_size
+---
+int16  current_position        
