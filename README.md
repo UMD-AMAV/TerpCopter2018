@@ -15,4 +15,4 @@ src: (contains all of the ROS packages)
 - vision
 
 
-Simulation folder contains modified iris model. Add the model into the Firmware/Tools/sitl_gazebo/models/iris
+Simulation folder contains modified iris.sdf. Add the model into the Firmware/Tools/sitl_gazebo/models/iris
