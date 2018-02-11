@@ -15,7 +15,4 @@ src: (contains all of the ROS packages)
 - vision
 
 
-TODO:
-- merge the yaw branch with master 
-- create launch flow abstract
-- finish node map abstract
+Simulation folder contains modified iris model. Add the model into the Firmware/Tools/sitl_gazebo/models/iris
