@@ -1,4 +1,0 @@
-<launch>
-  <node name="terpcopter_commander" pkg="terpcopter_commander" type="terpcopter_commander_main" output="screen" />
-  
-</launch>

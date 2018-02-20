@@ -25,8 +25,7 @@
 //	LIBRARIES
 //
 ///////////////////////////////////////////
-#include <offbFunction.h>
-
+#include "waypointFunction.hpp"
 
 ///////////////////////////////////////////
 //
@@ -34,168 +33,125 @@
 //
 ///////////////////////////////////////////
 
+TerpCopterMission::TerpCopterMission():
+verbal_flag(false), init_local_pose_check(true), priv_nh("~"){
 
-int main(int argc, char **argv){
-    ros::init(argc, argv, MISSION_NODE);
+    priv_nh.getParam("verbal_flag", verbal_flag);
 
-    // Object
-    TerpCopterMission mission;
+    // Subscriber
+    state_sub = nh.subscribe<mavros_msgs::State>
+            ("mavros/state", 10, &TerpCopterMission::state_cb, this);
 
-    ros::Subscriber state_sub = 
-        mission.nh.subscribe<mavros_msgs::State>
-            ("mavros/state", 10, &TerpCopterMission::state_cb,&mission);
+    pos_sub = nh.subscribe<nav_msgs::Odometry>
+            ("mavros/local_position/odom", 30, &TerpCopterMission::state_cu, this);
 
-    ros::Subscriber pos_sub = 
-        mission.nh.subscribe<nav_msgs::Odometry>
-            ("mavros/local_position/odom", 40, &TerpCopterMission::state_cu,&mission);
+    // TODO: vision circle node up
 
-    mission.local_pos_pub = 
-        mission.nh.advertise<geometry_msgs::PoseStamped>
-            ("mavros/setpoint_position/local", 40);
+    // Pulisher
+    local_pos_pub = 
+        nh.advertise<geometry_msgs::PoseStamped>
+            ("mavros/setpoint_position/local", 30);
 
-    ros::ServiceClient arming_client = 
-        mission.nh.serviceClient<mavros_msgs::CommandBool>
-            ("mavros/cmd/arming");
-    ros::ServiceClient set_mode_client = 
-        mission.nh.serviceClient<mavros_msgs::SetMode>
-            ("mavros/set_mode");
-
-    //the setpoint publishing rate MUST be faster than 2Hz
-    ros::Rate rate(50.0);
-
-    // wait for FCU connection
-    while(ros::ok() && !mission.current_state.connected){
-        ros::spinOnce();
-        rate.sleep();
-    }
-
-    mission.hover(2.0);
-    //send a few setpoints before starting
-    for(int i = 100; ros::ok() && i > 0; --i){
-        mission.local_pos_pub.publish(mission.pose);
-        ros::spinOnce();
-        rate.sleep();
-    }
-
-    mavros_msgs::SetMode offb_set_mode;
-    offb_set_mode.request.custom_mode = "OFFBOARD";
-
-    mavros_msgs::CommandBool arm_cmd;
-    arm_cmd.request.value = true;
-
-    ros::Time last_request = ros::Time::now();
-
-    while(ros::ok()){
-        if( mission.current_state.mode != "OFFBOARD" &&
-            (ros::Time::now() - last_request > ros::Duration(5.0))){
-            if( set_mode_client.call(offb_set_mode) &&
-                offb_set_mode.response.mode_sent){
-                ROS_INFO("Offboard enabled");
-            }
-            last_request = ros::Time::now();
-        } else {
-            if( !mission.current_state.armed &&
-                (ros::Time::now() - last_request > ros::Duration(5.0))){
-                if( arming_client.call(arm_cmd) &&
-                    arm_cmd.response.success){
-                    ROS_INFO("Vehicle armed");
-                }
-                last_request = ros::Time::now();
-            }
-        }
-
-        // setpoint 1= (12,2.1,2)
-        // setpoint 2= (yaw (rot about z, +/- 120))
-        // setpoint 3= ()
-
-        //HOVER 
-        mission.hover(2.0);
-
-         // TODO: LOOP OVER ALL THE WAYPOINTS FROM A .TXT FILE AND RUN THEM ONE BY ONE
-         // CREATE A FUNCTION BOOL REACHED 
-
-        //move to waypoints
-        if (mission.current_odom.pose.pose.position.z >= 0.95 * mission.pose.pose.position.z ){
-            ROS_INFO("Position-> z: [%f]",mission.current_odom.pose.pose.position.z);
-                mission.yaw(60,2.0);
-        }
-
-        if(mission.current_odom.pose.pose.orientation.x >=0.95*mission.pose.pose.orientation.x && 
-            mission.current_odom.pose.pose.orientation.y >=0.95*mission.pose.pose.orientation.y && 
-            mission.current_odom.pose.pose.orientation.z >=0.95*mission.pose.pose.orientation.z &&
-            mission.current_odom.pose.pose.orientation.w >=0.95*mission.pose.pose.orientation.w ){
-                ROS_INFO("hover");
-                mission.hover(2.0);
-
-        }
-
-        ros::spinOnce();
-        rate.sleep();
-    }
-
-    return 0;
+    get_waypoints();
 }
 
 void TerpCopterMission::state_cb(const mavros_msgs::State::ConstPtr& msg){
     current_state = *msg;
 }
 
-void TerpCopterMission::state_cu (const nav_msgs::Odometry::ConstPtr& msgS){
+void TerpCopterMission::state_cu (const nav_msgs::Odometry::ConstPtr& msg){
     //ROS_INFO("Position x: [%f], y: [%f], z: [%f]", msgP->pose.pose.position.x,msgP->pose.pose.position.y, msgP->pose.pose.position.z);
-    current_odom = *msgS;
+    current_odom = *msg;
 }
 
-void TerpCopterMission::hover(float z){
-    //ROS_INFO("Hovering");
-    pose.pose.position.x = 0.0;
-    pose.pose.position.y = 0.0;
-    pose.pose.position.z = z;
-
-    pose.pose.orientation.x = 0.0;
-    pose.pose.orientation.y = 0.0;
-    pose.pose.orientation.z = 0.0;
-    pose.pose.orientation.w = 0.0;
-
-    local_pos_pub.publish(pose);
+void TerpCopterMission::get_waypoints() {
+    if (ros::param::get("terpcopter_commander/num_waypoint", num_waypoint)) {}
+    else {
+        ROS_WARN("Didn't find num_waypoint");
+    }
+    if (ros::param::get("terpcopter_commander/x_pos", x_pos)) {}
+    else {
+        ROS_WARN("Didn't find x_pos");
+    }
+    if (ros::param::get("terpcopter_commander/y_pos", y_pos)) {}
+    else {
+        ROS_WARN("Didn't find y_pos");
+    }
+    if (ros::param::get("terpcopter_commander/z_pos", z_pos)) {}
+    else {
+        ROS_WARN("Didn't find z_pos");
+    }
 }
 
-void TerpCopterMission::move(float x, float y, float z){
-    ROS_INFO("Moving");
-    
-    pose.pose.position.x = x;
-    pose.pose.position.y = y;
-    pose.pose.position.z = abs(z);
+void TerpCopterMission::init_pose (const geometry_msgs::PoseStamped::ConstPtr& msg){
+    if (init_local_pose_check) {
+        for(int i = 0; i < num_waypoint; i++){
+            geometry_msgs::PoseStamped temp_target_pose;
 
-    //double t0 = ros::Time::now().toSec();
-    double current_distance = 0.0;
+            temp_target_pose.pose.position.x = msg->pose.position.x + x_pos[i];
+            temp_target_pose.pose.position.y = msg->pose.position.y + y_pos[i];
+            temp_target_pose.pose.position.z = msg->pose.position.z + z_pos[i];
 
-    do{
-        local_pos_pub.publish(pose);
-        //double t1 = ros::Time::now().toSec();
-        current_distance = current_odom.pose.pose.position.x;
-        //ROS_INFO("Position-> x: [%f]",current_odom.pose.pose.position.x);
-    }while(current_distance >= 0.95 * pose.pose.position.x);
+            waypoint_pose.push_back(temp_target_pose);
+        }
+
+        init_local_pose_check = false;
+    }
+
+    publish_waypoints();
+
+    ros::Rate rate(50.0);
+    rate.sleep();
+
+}
+void TerpCopterMission::publish_waypoints(){
+
+    if (!init_local_pose_check) {
+        local_pos_pub.publish(waypoint_pose[waypoint_count]);
+        if (verbal_flag) {
+            double dist = sqrt(
+                (current_odom.pose.pose.position.x-waypoint_pose[waypoint_count].pose.position.x)* 
+                (current_odom.pose.pose.position.x-waypoint_pose[waypoint_count].pose.position.x) + 
+                (current_odom.pose.pose.position.y-waypoint_pose[waypoint_count].pose.position.y)* 
+                (current_odom.pose.pose.position.y-waypoint_pose[waypoint_count].pose.position.y) + 
+                (current_odom.pose.pose.position.z-waypoint_pose[waypoint_count].pose.position.z)* 
+                (current_odom.pose.pose.position.z-waypoint_pose[waypoint_count].pose.position.z)); 
+            ROS_INFO("distance: %.2f", dist);
+
+        // if(vision_flag){
+                // wait a min observe take the mode
+                // align the yaw angle 
+                // GET hypotenus move x and y accordingly 
+                // P controller for x and y
+        // }
+
+        }
+        
+        if (abs(current_odom.pose.pose.position.x - waypoint_pose[waypoint_count].pose.position.x) < 0.5 && 
+            abs(current_odom.pose.pose.position.y - waypoint_pose[waypoint_count].pose.position.y) < 0.5 &&
+            abs(current_odom.pose.pose.position.z - waypoint_pose[waypoint_count].pose.position.z) < 0.5) {
+
+            waypoint_count += 1;
+
+            if (waypoint_count >= num_waypoint) {
+                waypoint_count = waypoint_count - 1;
+            }
+
+            // ROS_INFO("m_waypoint_count = %d, cur_pos = (%.2f, %.2f, %.2f), next_pos = (%.2f, %.2f, %.2f)", m_waypoint_count, 
+            //     m_current_pose.pose.position.x, m_current_pose.pose.position.y, m_current_pose.pose.position.z, 
+            //     m_waypoint_pose[m_waypoint_count].pose.position.x, m_waypoint_pose[m_waypoint_count].pose.position.y, m_waypoint_pose[m_waypoint_count].pose.position.z);
+        }
+    }
 
 }
 
-void TerpCopterMission::yaw (float yawMsg, float z){
-//TO DO: check the quaternion conventions
-    ROS_INFO("Yaw");
 
-    pose.pose.position.x = 0.0;
-    pose.pose.position.y = 0.0;
-    pose.pose.position.z = z;
+int main(int argc, char **argv){
+    ros::init(argc, argv, MISSION_NODE);
 
-    tf::Quaternion q= tf::createQuaternionFromYaw(yawMsg*0.0174532925);
-    pose.pose.orientation.x = q[0];
-    pose.pose.orientation.y = q[1];
-    pose.pose.orientation.z = q[2];
-    pose.pose.orientation.w = q[3];
-            
-    local_pos_pub.publish(pose);
+    // // Object
+    TerpCopterMission mission;
+
+    ros::spin();
+    return 0;
 }
-
-// bool TerpCopterMission::isReachedPos (){
-//     retun (current_odom.pose.pose.position.z >= 0.95 * pose.pose.position.z);
-// }
-
