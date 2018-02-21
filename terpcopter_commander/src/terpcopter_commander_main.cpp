@@ -46,6 +46,12 @@ verbal_flag(false), init_local_pose_check(true), priv_nh("~"){
             ("mavros/local_position/odom", 30, &TerpCopterMission::state_cu, this);
 
     // TODO: vision circle node up
+    
+    // wait for FCU connection
+    while(ros::ok() && !current_state.connected){
+        ros::spinOnce();
+        rate.sleep();
+    }
 
     // Pulisher
     local_pos_pub = 
@@ -65,19 +71,19 @@ void TerpCopterMission::state_cu (const nav_msgs::Odometry::ConstPtr& msg){
 }
 
 void TerpCopterMission::get_waypoints() {
-    if (ros::param::get("terpcopter_commander/num_waypoint", num_waypoint)) {}
+    if (ros::param::get("num_waypoint", num_waypoint)) {}
     else {
         ROS_WARN("Didn't find num_waypoint");
     }
-    if (ros::param::get("terpcopter_commander/x_pos", x_pos)) {}
+    if (ros::param::get("x_pos", x_pos)) {}
     else {
         ROS_WARN("Didn't find x_pos");
     }
-    if (ros::param::get("terpcopter_commander/y_pos", y_pos)) {}
+    if (ros::param::get("y_pos", y_pos)) {}
     else {
         ROS_WARN("Didn't find y_pos");
     }
-    if (ros::param::get("terpcopter_commander/z_pos", z_pos)) {}
+    if (ros::param::get("z_pos", z_pos)) {}
     else {
         ROS_WARN("Didn't find z_pos");
     }
@@ -148,7 +154,7 @@ void TerpCopterMission::publish_waypoints(){
 
 int main(int argc, char **argv){
     ros::init(argc, argv, MISSION_NODE);
-
+    
     // // Object
     TerpCopterMission mission;
 
