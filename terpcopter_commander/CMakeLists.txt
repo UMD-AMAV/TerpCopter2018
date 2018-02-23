@@ -104,8 +104,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
     INCLUDE_DIRS include
-    #LIBRARIES offb
-    CATKIN_DEPENDS roscpp rospy std_msgs nav_msgs
+    LIBRARIES mission
+    CATKIN_DEPENDS roscpp rospy std_msgs nav_msgs geometry_msgs message_runtime
+
 )
 
 ###########
@@ -121,6 +122,7 @@ include_directories(
 
 # Declare a C++ library
 add_library(terpcopter_commander
+    #src/waypointFunction.cpp
     src/terpcopter_commander_main.cpp
 )
 

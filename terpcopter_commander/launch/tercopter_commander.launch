@@ -1,6 +1,5 @@
 <launch>
   <node name="terpcopter_commander" pkg="terpcopter_commander" type="terpcopter_commander_main" output="screen" />
-    <param name="verbal_flag" type="bool" value="true"/>
-  <rosparam file="yaml/waypoints.yaml"/>
-  
+  <param name="verbal_flag" type="bool" value="true"/>
+  <rosparam file="$(find terpcopter_commander)/yaml/waypoints.yaml" command="load" />
 </launch>
