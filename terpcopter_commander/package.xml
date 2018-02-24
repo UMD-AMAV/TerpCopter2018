@@ -47,6 +47,10 @@
   <build_depend>nav_msgs</build_depend>
   <run_depend>rospy</run_depend>
   <run_depend>mavros</run_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <build_depend>message_runtime</build_depend>
+  <run_depend>message_runtime</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
