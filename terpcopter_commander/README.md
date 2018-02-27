@@ -49,5 +49,9 @@ arm the vechile:
 rosrun mavros mavsafety arm
 ```
 
+to see topics
+```
+ rosrun rqt_topic rqt_topic
+```
 
 
