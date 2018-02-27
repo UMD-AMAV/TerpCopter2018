@@ -17,10 +17,9 @@ The initial implementation is taken from the [MAVROS offboard control example](h
 
 ```
 cd ~/wherever/
-git clone https://github.com/julianoes/offb.git
+git clone 
 cd ~/catkin_ws
-ln -s ~/wherever/offb ~/catkin_ws/src/offb
-catkin_make
+catkin build
 ```
 
 ### Running
