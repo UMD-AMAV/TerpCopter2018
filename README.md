@@ -9,4 +9,4 @@ Top Level: (contains all pertinent project code)
 - terpcopter_commander
 - terpcopter_vision
 
-Simulation folder contains modified iris.sdf. Add the model into the Firmware/Tools/sitl_gazebo/models/iris
+Simulation folder contains modified iris.sdf and world and models. Add the model into the Firmware/Tools/sitl_gazebo/models/iris and worlds respectively 
