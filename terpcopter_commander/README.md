@@ -1,4 +1,4 @@
-# Terpcopter Commander Offboard mode
+# Terpcopter Mission
 
 Offboard control using [ROS](http://www.ros.org) and [MAVROS](https://github.com/mavlink/mavros) for [PX4](https://github.com/PX4/Firmware).
 
@@ -32,11 +32,22 @@ make posix gazebo
 Then start MAVROS:
 
 ```
-roslaunch mavros px4.launch fcu_url:="udp://:14540@14557"
+roslaunch mavros px4.launch fcu_url:="udp://:14540@127.0.0.1:14557"
 ```
 
-And finally terpcopter commander:
+And launch terpcopter:
 
 ```
 roslaunch terpcopter_commander terpcopter_commander.launch
 ```
+run offboard mode:
+```
+rosrun mavros mavsys mode -c OFFBOARD
+```
+arm the vechile:
+```
+rosrun mavros mavsafety arm
+```
+
+
+

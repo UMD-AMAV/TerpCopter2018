@@ -1,12 +1,11 @@
-
 //
-// THIS FILE CONTAINS A SAMPLE MISSION IMPLEMENTATION THROUGH
-// MAVROS SERVICES AND RELIES ON LPE ESTIMATOR
+// THIS FILE PERFORMS AUTONOMOUS WAYPOINT NAVIGATION USING MAVROS
+// RUN OFFBOARD MODE AND ARM THE VECHILE USING ROSRUN MAVROS
 //
 // COPYRIGHT BELONGS TO THE AUTHOR OF THIS CODE
 //
-// AUTHOR : SAIMOULI KATRAGADA
-// AFFILIATION : UNIVERSITY OF MARYLAND
+// AUTHOR : SAIMOULI KATRAGADDA
+// AFFILIATION : UNIVERSITY OF MARYLAND 
 // EMAIL : SKATRAGA@TERPMAIL.UMD.EDU
 //
 // THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THE GPLv3 LICENSE
@@ -24,178 +23,209 @@
 //
 //	LIBRARIES
 //
-///////////////////////////////////////////
-#include <offbFunction.h>
+/////////////////////////////////////////// 
+#include <waypointFunction.h>
 
+using namespace mission;
+using namespace std;
 
-///////////////////////////////////////////
-//
-//	MAIN FUNCTION
-//
-///////////////////////////////////////////
+// constructor
+terpcopterMission::terpcopterMission():
+main_state(ST_INIT),
+rate(20.0)
+{
+    // clear all members's value here
 
-
-int main(int argc, char **argv){
-    ros::init(argc, argv, MISSION_NODE);
-
-    // Object
-    TerpCopterMission mission;
-
-    ros::Subscriber state_sub = 
-        mission.nh.subscribe<mavros_msgs::State>
-            ("mavros/state", 10, &TerpCopterMission::state_cb,&mission);
-
-    ros::Subscriber pos_sub = 
-        mission.nh.subscribe<nav_msgs::Odometry>
-            ("mavros/local_position/odom", 40, &TerpCopterMission::state_cu,&mission);
-
-    mission.local_pos_pub = 
-        mission.nh.advertise<geometry_msgs::PoseStamped>
-            ("mavros/setpoint_position/local", 40);
-
-    ros::ServiceClient arming_client = 
-        mission.nh.serviceClient<mavros_msgs::CommandBool>
-            ("mavros/cmd/arming");
-    ros::ServiceClient set_mode_client = 
-        mission.nh.serviceClient<mavros_msgs::SetMode>
-            ("mavros/set_mode");
-
-    //the setpoint publishing rate MUST be faster than 2Hz
-    ros::Rate rate(50.0);
-
-    // wait for FCU connection
-    while(ros::ok() && !mission.current_state.connected){
-        ros::spinOnce();
-        rate.sleep();
-    }
-
-    mission.hover(2.0);
-    //send a few setpoints before starting
-    for(int i = 100; ros::ok() && i > 0; --i){
-        mission.local_pos_pub.publish(mission.pose);
-        ros::spinOnce();
-        rate.sleep();
-    }
-
-    mavros_msgs::SetMode offb_set_mode;
-    offb_set_mode.request.custom_mode = "OFFBOARD";
-
-    mavros_msgs::CommandBool arm_cmd;
-    arm_cmd.request.value = true;
-
-    ros::Time last_request = ros::Time::now();
-
-    while(ros::ok()){
-        if( mission.current_state.mode != "OFFBOARD" &&
-            (ros::Time::now() - last_request > ros::Duration(5.0))){
-            if( set_mode_client.call(offb_set_mode) &&
-                offb_set_mode.response.mode_sent){
-                ROS_INFO("Offboard enabled");
-            }
-            last_request = ros::Time::now();
-        } else {
-            if( !mission.current_state.armed &&
-                (ros::Time::now() - last_request > ros::Duration(5.0))){
-                if( arming_client.call(arm_cmd) &&
-                    arm_cmd.response.success){
-                    ROS_INFO("Vehicle armed");
-                }
-                last_request = ros::Time::now();
-            }
-        }
-
-        // setpoint 1= (12,2.1,2)
-        // setpoint 2= (yaw (rot about z, +/- 120))
-        // setpoint 3= ()
-
-        //HOVER 
-        mission.hover(2.0);
-
-         // TODO: LOOP OVER ALL THE WAYPOINTS FROM A .TXT FILE AND RUN THEM ONE BY ONE
-         // CREATE A FUNCTION BOOL REACHED 
-
-        //move to waypoints
-        if (mission.current_odom.pose.pose.position.z >= 0.95 * mission.pose.pose.position.z ){
-            ROS_INFO("Position-> z: [%f]",mission.current_odom.pose.pose.position.z);
-                mission.yaw(60,2.0);
-        }
-
-        if(mission.current_odom.pose.pose.orientation.x >=0.95*mission.pose.pose.orientation.x && 
-            mission.current_odom.pose.pose.orientation.y >=0.95*mission.pose.pose.orientation.y && 
-            mission.current_odom.pose.pose.orientation.z >=0.95*mission.pose.pose.orientation.z &&
-            mission.current_odom.pose.pose.orientation.w >=0.95*mission.pose.pose.orientation.w ){
-                ROS_INFO("hover");
-                mission.hover(2.0);
-
-        }
-
-        ros::spinOnce();
-        rate.sleep();
-    }
-
-    return 0;
 }
 
-void TerpCopterMission::state_cb(const mavros_msgs::State::ConstPtr& msg){
+// state_sub
+terpcopterMission::~terpcopterMission(){
+
+}
+
+void
+terpcopterMission::tercoptermission_main(void){
+
+    // subscribers init
+    state_sub = nh.subscribe<mavros_msgs::State>("mavros/state", 10, &terpcopterMission::state_cb, this);
+    cur_pos_sub = nh.subscribe<geometry_msgs::PoseStamped>("mavros/local_position/pose", 10, &terpcopterMission::local_pos_cb, this);
+
+    // publishers init
+    local_pos_sp_pub = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
+
+    // services init
+    land_client = nh.serviceClient<mavros_msgs::CommandTOL>("mavros/cmd/land");
+    //ros::ServiceClient arming_client =_nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming"); 
+    //ros::ServiceClient set_mode_client = _nh.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
+
+    cout<<"wait for FCU connection"<<endl;
+    wait_connect();
+
+    cout<<"send a few setpoints before switch to OFFBOARD mode"<<endl;
+    cmd_streams();
+
+    // for landing service
+    landing_last_request = ros::Time::now();
+    //ros::Time last_request = ros::Time::now();
+
+    //mavros_msgs::SetMode offb_set_mode;
+    //offb_set_mode.request.custom_mode = "OFFBOARD";
+
+    //mavros_msgs::CommandBool arm_cmd;
+    //arm_cmd.request.value = true;
+
+    // state machine
+    while(ros::ok()){
+
+		if(!current_state.armed){
+			main_state = ST_INIT;
+		}
+
+        //  if( _current_state.mode != "OFFBOARD" &&
+        //     (ros::Time::now() - last_request > ros::Duration(5.0))){
+        //     if( set_mode_client.call(offb_set_mode) &&
+        //         offb_set_mode.response.mode_sent){
+        //         ROS_INFO("Offboard enabled");
+        //     }
+        //     last_request = ros::Time::now();
+        // } else {
+        //     if( !_current_state.armed &&
+        //         (ros::Time::now() - last_request > ros::Duration(5.0))){
+        //         if( arming_client.call(arm_cmd) &&
+        //             arm_cmd.response.success){
+        //             ROS_INFO("Vehicle armed");
+        //         }
+        //         last_request = ros::Time::now();
+        //     }
+        // }
+
+
+        state_machine();
+        ros::spinOnce();
+        rate.sleep();
+    }
+}
+
+void
+terpcopterMission::state_machine(void)
+{
+    /***************** TODO: get values from file ***********************/
+    cout<<"state machine"<<endl;
+    geometry_msgs::PoseStamped pose_a;
+    geometry_msgs::PoseStamped pose_b;
+
+	set_pos_sp(pose_a, 0.0, 0.0, 2.0); //TODO get the waypoints from file
+	set_yaw_sp(pose_a, 0.785);
+
+	set_pos_sp(pose_b, 1.0, 0.0, 1.5);
+	set_yaw_sp(pose_b, 0);
+    /****************************************/
+
+    switch(main_state){
+        case ST_INIT:
+            local_pos_sp_pub.publish(current_local_pos);
+            if(current_state.armed && current_state.mode == "OFFBOARD")    // start mission
+            {
+                main_state = ST_TAKEOFF;
+            }
+            break;
+        case ST_TAKEOFF:
+            cout<<"Takeoff"<<endl;
+            //cout<<"pose :"<< pose_a.pose.position.x<<endl;
+
+            local_pos_sp_pub.publish(pose_a);      // publish display's local position
+            if((abs(current_local_pos.pose.position.x - pose_a.pose.position.x) < 0.1) &&
+               (abs(current_local_pos.pose.position.y - pose_a.pose.position.y) < 0.1) &&
+               (abs(current_local_pos.pose.position.z - pose_a.pose.position.z) < 0.1))
+               {
+                    main_state = ST_MOVE; // get digital number from display
+               }
+            break;
+        case ST_MOVE:
+            local_pos_sp_pub.publish(pose_b);      // start sub state machine, here just publish local pos for debug convenience
+            if((abs(current_local_pos.pose.position.x - pose_b.pose.position.x) < 0.1) &&
+               (abs(current_local_pos.pose.position.y - pose_b.pose.position.y) < 0.1) &&
+               (abs(current_local_pos.pose.position.z - pose_b.pose.position.z) < 0.1))
+               {
+                    main_state = ST_LAND;
+               }
+            break;
+        case ST_LAND:
+            if(current_state.mode == "OFFBOARD"){
+                // used same logic given in sample code for offboard mode
+                if(current_state.mode != "AUTO.LAND" &&
+                (ros::Time::now() - landing_last_request > ros::Duration(5.0))){
+                if(land_client.call(landing_cmd) &&
+                    landing_cmd.response.success){
+                    ROS_INFO("AUTO LANDING!");
+                }
+                landing_last_request = ros::Time::now();
+                }
+            }
+            break;
+    }
+}
+
+// uav state subscriber's callback function
+void
+terpcopterMission::state_cb(const mavros_msgs::State::ConstPtr& msg)
+{
     current_state = *msg;
 }
 
-void TerpCopterMission::state_cu (const nav_msgs::Odometry::ConstPtr& msgS){
-    //ROS_INFO("Position x: [%f], y: [%f], z: [%f]", msgP->pose.pose.position.x,msgP->pose.pose.position.y, msgP->pose.pose.position.z);
-    current_odom = *msgS;
+// local pos subscriber's callback function
+void
+terpcopterMission::local_pos_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+    current_local_pos = *msg;
 }
 
-void TerpCopterMission::hover(float z){
-    //ROS_INFO("Hovering");
-    pose.pose.position.x = 0.0;
-    pose.pose.position.y = 0.0;
-    pose.pose.position.z = z;
-
-    pose.pose.orientation.x = 0.0;
-    pose.pose.orientation.y = 0.0;
-    pose.pose.orientation.z = 0.0;
-    pose.pose.orientation.w = 0.0;
-
-    local_pos_pub.publish(pose);
+// wait for mavros connecting with pixhawk
+void
+terpcopterMission::wait_connect(void)
+{
+    while(ros::ok() && !current_state.connected){
+        ros::spinOnce();
+        rate.sleep();
+    }
 }
 
-void TerpCopterMission::move(float x, float y, float z){
-    ROS_INFO("Moving");
-    
-    pose.pose.position.x = x;
+// send commands streams to pixhawk before switch to OFFBOARD mode
+void
+terpcopterMission::cmd_streams(void)
+{
+    // publish current local position
+    for(int i = 100; ros::ok() && i > 0; --i){
+        local_pos_sp_pub.publish(current_local_pos);
+        ros::spinOnce();
+        rate.sleep();
+    }
+}
+
+// set yaw setpoint -- unit: rad
+void
+terpcopterMission::set_yaw_sp(geometry_msgs::PoseStamped &pose, const double yaw)
+{
+	tf::Quaternion quat_yaw = tf::createQuaternionFromYaw(yaw);
+	pose.pose.orientation.x = quat_yaw.x();
+	pose.pose.orientation.y = quat_yaw.y();
+	pose.pose.orientation.z = quat_yaw.z();
+	pose.pose.orientation.w = quat_yaw.w();
+}
+
+// set position setpoint -- unit: m
+void
+terpcopterMission::set_pos_sp(geometry_msgs::PoseStamped &pose, const double x, const double y, const double z)
+{
+	pose.pose.position.x = x;
     pose.pose.position.y = y;
-    pose.pose.position.z = abs(z);
-
-    //double t0 = ros::Time::now().toSec();
-    double current_distance = 0.0;
-
-    do{
-        local_pos_pub.publish(pose);
-        //double t1 = ros::Time::now().toSec();
-        current_distance = current_odom.pose.pose.position.x;
-        //ROS_INFO("Position-> x: [%f]",current_odom.pose.pose.position.x);
-    }while(current_distance >= 0.95 * pose.pose.position.x);
-
-}
-
-void TerpCopterMission::yaw (float yawMsg, float z){
-//TO DO: check the quaternion conventions
-    ROS_INFO("Yaw");
-
-    pose.pose.position.x = 0.0;
-    pose.pose.position.y = 0.0;
     pose.pose.position.z = z;
-
-    tf::Quaternion q= tf::createQuaternionFromYaw(yawMsg*0.0174532925);
-    pose.pose.orientation.x = q[0];
-    pose.pose.orientation.y = q[1];
-    pose.pose.orientation.z = q[2];
-    pose.pose.orientation.w = q[3];
-            
-    local_pos_pub.publish(pose);
 }
 
-// bool TerpCopterMission::isReachedPos (){
-//     retun (current_odom.pose.pose.position.z >= 0.95 * pose.pose.position.z);
-// }
 
+int main(int argc, char **argv){
+    ros::init(argc, argv, "autonomy");
+    terpcopterMission mis;
+    mis.tercoptermission_main();
+    return 0;
+}

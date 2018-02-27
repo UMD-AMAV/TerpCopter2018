@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import roslib
-roslib.load_manifest('beginner_tutorials')
+roslib.load_manifest('offb_pkg')
 import sys
 import rospy
 import cv2
@@ -18,7 +18,7 @@ class image_converter:
     self.image_pub = rospy.Publisher("image_topic_2",Image,queue_size=10)
 
     self.bridge = CvBridge()
-    self.image_sub = rospy.Subscriber("/camera/image/compressed",CompressedImage,self.callback)
+    self.image_sub = rospy.Subscriber("/iris_opt_flow/camera_red_iris/image_raw/compressed",CompressedImage,self.callback)
 
   def callback(self,ros_data):
     try:
