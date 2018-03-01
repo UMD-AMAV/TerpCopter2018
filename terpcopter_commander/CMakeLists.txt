@@ -130,7 +130,7 @@ add_dependencies(terpcopter_commander ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 
 ## Declare a C++ executable
 add_executable(terpcopter_commander_main
- src/terpcopter_commander_main.cpp
+ src/terpcopter_commander_main.cpp src/waypointFunction.cpp
 )
 
 ## Add cmake target dependencies of the library
