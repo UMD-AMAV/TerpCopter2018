@@ -24,12 +24,12 @@ catkin build
 
 ### Running
 
-Start PX4 with e.g.:
+Start PX4 with (from ~/src/Firmware) e.g.:
 ```
 make posix gazebo
 ```
 
-Then start MAVROS:
+Then start MAVROS (from anywhere):
 
 ```
 roslaunch mavros px4.launch fcu_url:="udp://:14540@14557"
@@ -47,6 +47,3 @@ arm the vechile:
 ```
 rosrun mavros mavsafety arm
 ```
-
-
-
