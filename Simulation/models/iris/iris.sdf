@@ -14,7 +14,7 @@
           <izz>0.097701</izz>
         </inertia>
       </inertial>
-      <collision name='base_link_fixed_joint_lump__/camera_red_iris_link_collision'>
+      <collision name='base_link_fixed_joint_lump__/camera_iris_link_collision'>
         <pose frame=''>0.06 0 0.07 0 0.52 0</pose>
         <geometry>
           <box>
@@ -49,7 +49,7 @@
           </friction>
         </surface>
       </collision>
-      <visual name='base_link_fixed_joint_lump__/camera_red_iris_link_visual'>
+      <visual name='base_link_fixed_joint_lump__/camera_iris_link_visual'>
         <pose frame=''>0.06 0 0.07 3.14159 1.0508 3.14159</pose>
         <geometry>
           <box>
@@ -81,7 +81,7 @@
       <velocity_decay/>
       <gravity>1</gravity>
       <velocity_decay/>
-      <sensor name='_camera_red_iris' type='camera'>
+      <sensor name='_camera_iris' type='camera'>
         <update_rate>30</update_rate>
         <camera name='head'>
           <horizontal_fov>1.39626</horizontal_fov>
@@ -100,14 +100,14 @@
             <stddev>0.007</stddev>
           </noise>
         </camera>
-        <plugin name='_camera_red_iris_controller' filename='libgazebo_ros_camera.so'>
+        <plugin name='_camera_iris_controller' filename='libgazebo_ros_camera.so'>
           <robotNamespace/>
           <alwaysOn>true</alwaysOn>
           <updateRate>30.0</updateRate>
-          <cameraName>camera_red_iris</cameraName>
+          <cameraName>camera_iris</cameraName>
           <imageTopicName>image_raw</imageTopicName>
           <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-          <frameName>camera_red_iris_link</frameName>
+          <frameName>camera_iris_link</frameName>
           <hackBaseline>0.0</hackBaseline>
           <distortionK1>0.0</distortionK1>
           <distortionK2>0.0</distortionK2>
