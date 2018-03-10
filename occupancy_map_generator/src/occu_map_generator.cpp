@@ -43,6 +43,7 @@ int main( int argc, char** argv )
   ros::Publisher grid_pub = n.advertise<nav_msgs::OccupancyGrid>("OccupancyGrid", 1);
 
   //ros::Subscriber origin_pose = n.subscribe<geometry_msgs::Pose>("mavros/local_position/pose", 10, &terpcopterMission::local_pos_cb, this);
+  //ros::Subscriber range = n.subsribe<sensor_msgs::Range>("teraranger_one",1);
 
   while (ros::ok())
   {
