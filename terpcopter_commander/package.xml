@@ -51,6 +51,13 @@
   <run_depend>geometry_msgs</run_depend>
   <build_depend>message_runtime</build_depend>
   <run_depend>message_runtime</run_depend>
+  <build_depend>gazebo_msgs</build_depend>
+  <run_depend>gazebo_msgs</run_depend>
+  <build_depend>terpcopter_comm	</build_depend>
+  <run_depend>terpcopter_comm	</run_depend>
+  <build_depend>roslib</build_depend>
+  <run_depend>roslib</run_depend>
+
 
 
   <!-- The export tag contains other, unspecified, tags -->

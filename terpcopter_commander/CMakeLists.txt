@@ -11,6 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
     std_msgs
     nav_msgs
     mavros_msgs
+    gazebo_msgs
+    roslib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -54,11 +56,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+#  add_service_files(
+#    DIRECTORY terpcopter_comm/srv
+#    FILES DetectObject.srv 
+# #  )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -105,7 +106,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES mission
-    CATKIN_DEPENDS roscpp rospy std_msgs nav_msgs geometry_msgs message_runtime
+    CATKIN_DEPENDS roscpp rospy std_msgs nav_msgs geometry_msgs message_runtime terpcopter_comm roslib
 
 )
 
@@ -122,15 +123,18 @@ include_directories(
 
 # Declare a C++ library
 add_library(terpcopter_commander
-    #src/waypointFunction.cpp
+    src/waypointFunction.cpp
     src/terpcopter_commander_main.cpp
+    #src/offb_main.cpp
 )
 
 add_dependencies(terpcopter_commander ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 add_executable(terpcopter_commander_main
- src/terpcopter_commander_main.cpp
+ src/terpcopter_commander_main.cpp 
+ src/waypointFunction.cpp
+ #src/offb_main.cpp
 )
 
 ## Add cmake target dependencies of the library
