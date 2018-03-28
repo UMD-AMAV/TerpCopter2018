@@ -1,0 +1,5 @@
+<launch>
+	<node name="terpcopter_camera_node" pkg="terpcopter_driver" type="terpcopter_camera_node" >
+		<param name="forward_camera_id" type="int" value="0" />
+	</node>
+</launch>
