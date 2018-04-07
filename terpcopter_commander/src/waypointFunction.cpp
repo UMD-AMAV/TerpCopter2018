@@ -87,7 +87,7 @@ void terpcopterMission::state_machine(void)
     geometry_msgs::PoseStamped pose_b;
 
 	set_pos_sp(pose_a, 0.0, 0.0, 2.0); //TODO get the waypoints from file
-	set_yaw_sp(pose_a, 0.785);
+	set_yaw_sp(pose_a, 0);
 
 	set_pos_sp(pose_b, 1.0, 0.0, 1.5);
 	set_yaw_sp(pose_b, 0);
