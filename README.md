@@ -1,18 +1,47 @@
 # TerpCopter2018
-Repository for AMAV team codebase in the 2018 AHS Competition
 
-Working yaw is in the yaw branch 
+Offboard control using [ROS](http://www.ros.org) and [MAVROS](https://github.com/mavlink/mavros) for [PX4](https://github.com/PX4/Firmware).
 
+The initial implementation is taken from the [MAVROS offboard control example](http://dev.px4.io/ros-mavros-offboard.html).
 
-File Structure:
+## Usage
 
-Top Level: (contains all pertinent project code)
-- simulation
-- terpcopter_comm
+### Dependencies
 
-src: (contains all of the ROS packages)
-- commander
-- vision
+- [ROS](http://www.ros.org)
+- [MAVROS](https://github.com/mavlink/mavros)
+- [Catkin workspace](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
 
+### Running
 
-Simulation folder contains modified iris.sdf. Add the model into the Firmware/Tools/sitl_gazebo/models/iris
+Start PX4 with (from ~/src/Firmware) e.g.:
+```
+make posix gazebo
+```
+
+Then start MAVROS (from anywhere):
+
+```
+roslaunch mavros px4.launch 
+```
+
+And launch terpcopter:
+```
+roslaunch terpcopter_commander terpcopter_commander.launch
+```
+run offboard mode:
+```
+rosrun mavros mavsys mode -c OFFBOARD
+```
+arm the vechile:
+```
+rosrun mavros mavsafety arm
+```
+### Service Test
+```
+rossrv show [service name]
+```
+```
+rosservice call [service name] [arg]
+```
+
