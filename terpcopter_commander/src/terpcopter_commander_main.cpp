@@ -32,6 +32,12 @@ using namespace std;
 
 int main(int argc, char **argv){
     ros::init(argc, argv, "autonomy");
+
+    //set logger level
+    if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
+        ros::console::levels::Debug))
+    ros::console::notifyLoggerLevelsChanged();
+
     terpcopterMission mis;
     mis.tercoptermission_main();
     return 0;

@@ -1,23 +1,37 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(terpcopter_commander)
+project(terpcopter_driver)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-    roscpp
-    mavros
-    rospy
-    std_msgs
-    nav_msgs
-    mavros_msgs
-    gazebo_msgs
-    roslib
+find_package(catkin REQUIRED
+  sensor_msgs
+  cmake_modules
 )
+
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  rospy
+  std_msgs
+  sensor_msgs
+  image_transport
+  cv_bridge
+  terpcopter_comm
+  dynamic_reconfigure
+)
+
+find_package(Boost REQUIRED COMPONENTS thread system signals)
+find_package(Eigen REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+find_package(OpenCV 3.1.0 REQUIRED)
+
+generate_dynamic_reconfigure_options(
+  cfg/TerarangerOne.cfg
+)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -56,10 +70,11 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-#  add_service_files(
-#    DIRECTORY terpcopter_comm/srv
-#    FILES DetectObject.srv 
-# #  )
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -71,7 +86,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
+#   std_msgs
 # )
 
 ################################################
@@ -104,10 +119,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-    INCLUDE_DIRS include
-    LIBRARIES mission
-    CATKIN_DEPENDS roscpp rospy std_msgs nav_msgs geometry_msgs message_runtime terpcopter_comm roslib
-
+  INCLUDE_DIRS include
+#  LIBRARIES terpcopter_driver
+  CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs image_transport terpcopter_comm dynamic_reconfigure
+  DEPENDS system_lib boost eigen
 )
 
 ###########
@@ -116,42 +131,54 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+
+include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  include
+  ${OpenCV_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
 )
 
-# Declare a C++ library
-add_library(terpcopter_commander
-    src/waypointFunction.cpp
-    src/terpcopter_commander_main.cpp
-    #src/offb_main.cpp
-)
 
-add_dependencies(terpcopter_commander ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Declare a C++ executable
-add_executable(terpcopter_commander_main
-
- src/terpcopter_commander_main.cpp 
- src/waypointFunction.cpp
- #src/offb_main.cpp
-
-)
+## Declare a C++ library
+# add_library(terpcopter_driver
+#   src/${PROJECT_NAME}/terpcopter_driver.cpp
+# )
 
 ## Add cmake target dependencies of the library
-add_dependencies(terpcopter_commander_main
- ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS}
-)
+## as an example, code may need to be generated before libraries
+## either from message generation or dynamic reconfigure
+# add_dependencies(terpcopter_driver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+
+## Declare a C++ executable
+# add_executable(terpcopter_driver_node src/terpcopter_driver_node.cpp)
+add_executable(terpcopter_camera_node src/terpcopter_camera_node.cpp)
+add_executable(terpcopter_teraranger_node src/teraranger_serial_comm.cpp src/terpcopter_teraranger_node.cpp)
+
+## Add cmake target dependencies of the executable
+## same as for the library above
+# add_dependencies(terpcopter_driver_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(terpcopter_commander_main
- ${catkin_LIBRARIES}
-)
+# target_link_libraries(terpcopter_driver_node
+#   ${catkin_LIBRARIES}
+# )
+target_link_libraries(terpcopter_camera_node  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} )
+target_link_libraries(terpcopter_teraranger_node   ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
+
+
+
 
 #############
 ## Install ##
 #############
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+  PATTERN ".svn" EXCLUDE
+)
 
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
@@ -164,7 +191,7 @@ target_link_libraries(terpcopter_commander_main
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS offb offb_main
+# install(TARGETS terpcopter_driver terpcopter_driver_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -177,7 +204,7 @@ target_link_libraries(terpcopter_commander_main
 #   PATTERN ".svn" EXCLUDE
 # )
 
-# Mark other files for installation (e.g. launch and bag files, etc.)
+## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
 #   # myfile1
 #   # myfile2
@@ -189,7 +216,7 @@ target_link_libraries(terpcopter_commander_main
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_offb.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_terpcopter_driver.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

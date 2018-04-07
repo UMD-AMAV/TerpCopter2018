@@ -1,23 +1,25 @@
 <?xml version="1.0"?>
 <package>
-  <name>terpcopter_commander</name>
-  <version>0.1.0</version>
-  <description>Offboard control using ROS and MAVROS for PX4</description>
+  <name>terpcopter_driver</name>
+  <version>0.0.0</version>
+  <description>The terpcopter_driver package</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag -->
-  <maintainer email="skatraga@terpmail.umd.edu">Saimouli Katragadda</maintainer>
+  <!-- One maintainer tag required, multiple allowed, one person per tag --> 
+  <!-- Example:  -->
+  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
+ <maintainer email="lkumar93@terpmail.umd.edu">Lakshman Kumar</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>BSD 3-clase</license>
+  <license>GPLv3</license>
 
 
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/offb</url> -->
+  <!-- <url type="website">http://wiki.ros.org/terpcopter_driver</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -39,26 +41,22 @@
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
-  <run_depend>roscpp</run_depend>
   <build_depend>rospy</build_depend>
-  <run_depend>std_msgs</run_depend>
   <build_depend>std_msgs</build_depend>
-   <run_depend>nav_msgs</run_depend>
-  <build_depend>nav_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>terpcopter_comm</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+
+  <run_depend>cmake_modules</run_depend> 
+  <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
-  <run_depend>mavros</run_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <build_depend>message_runtime</build_depend>
-  <run_depend>message_runtime</run_depend>
-  <build_depend>gazebo_msgs</build_depend>
-  <run_depend>gazebo_msgs</run_depend>
-  <build_depend>terpcopter_comm	</build_depend>
-  <run_depend>terpcopter_comm	</run_depend>
-  <build_depend>roslib</build_depend>
-  <run_depend>roslib</run_depend>
-
-
+  <run_depend>std_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>image_transport</run_depend>
+  <run_depend>terpcopter_comm</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

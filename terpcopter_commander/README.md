@@ -47,3 +47,11 @@ arm the vechile:
 ```
 rosrun mavros mavsafety arm
 ```
+### Service Test
+```
+rossrv show [service name]
+```
+```
+rosservice call [service name] [arg]
+```
+

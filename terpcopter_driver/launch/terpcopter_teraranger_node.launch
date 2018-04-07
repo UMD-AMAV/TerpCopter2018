@@ -1,0 +1,5 @@
+<launch>
+	<node name="terpcopter_teraranger_node" pkg="terpcopter_driver" type="terpcopter_teraranger_node" >
+		<param name="serial_port" type="str" value="/dev/ttyUSB1" />
+	</node>
+</launch>

@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+*.DS_Store
 
 # Catkin_Make directories and files
 /build/

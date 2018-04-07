@@ -1,12 +1,37 @@
 # TerpCopter2018
-Repository for AMAV team codebase in the 2018 AHS Competition
 
-File Structure:
+### Dependencies
 
-Top Level: (contains all pertinent project code)
-- simulation
-- terpcopter_comm
-- terpcopter_commander
-- terpcopter_vision
+- [ROS](http://www.ros.org)
+- [MAVROS](https://github.com/mavlink/mavros)
+- [PX4](https://docs.px4.io/)
+- [OpenCV](https://opencv.org/)
+- [MatLab](https://www.mathworks.com/products/matlab.html)
 
-Simulation folder contains modified iris.sdf and world and models. Add the model into the Firmware/Tools/sitl_gazebo/models/iris and worlds respectively 
+### Running
+
+Start MAVROS (from anywhere):
+
+```
+roslaunch mavros px4.launch 
+```
+
+And launch terpcopter:
+```
+roslaunch terpcopter_commander terpcopter_commander.launch
+```
+run offboard mode:
+```
+rosrun mavros mavsys mode -c OFFBOARD
+```
+arm the vechile:
+```
+rosrun mavros mavsafety arm
+```
+### Service Test
+```
+rossrv show [service name]
+```
+```
+rosservice call [service name] [arg]
+```

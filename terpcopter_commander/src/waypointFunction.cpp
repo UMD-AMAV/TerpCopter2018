@@ -17,8 +17,7 @@ terpcopterMission::~terpcopterMission(){
 
 }
 
-void
-terpcopterMission::tercoptermission_main(void){
+void terpcopterMission::tercoptermission_main(void){
 
     // subscribers init
     state_sub = nh.subscribe<mavros_msgs::State>("mavros/state", 10, &terpcopterMission::state_cb, this);
@@ -80,8 +79,7 @@ terpcopterMission::tercoptermission_main(void){
     }
 }
 
-void
-terpcopterMission::state_machine(void)
+void terpcopterMission::state_machine(void)
 {
     /***************** TODO: get values from file ***********************/
     cout<<"state machine"<<endl;
@@ -141,22 +139,19 @@ terpcopterMission::state_machine(void)
 }
 
 // uav state subscriber's callback function
-void
-terpcopterMission::state_cb(const mavros_msgs::State::ConstPtr& msg)
+void terpcopterMission::state_cb(const mavros_msgs::State::ConstPtr& msg)
 {
     current_state = *msg;
 }
 
 // local pos subscriber's callback function
-void
-terpcopterMission::local_pos_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
+void terpcopterMission::local_pos_cb(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     current_local_pos = *msg;
 }
 
 // wait for mavros connecting with pixhawk
-void
-terpcopterMission::wait_connect(void)
+void terpcopterMission::wait_connect(void)
 {
     while(ros::ok() && !current_state.connected){
         ros::spinOnce();
@@ -165,8 +160,7 @@ terpcopterMission::wait_connect(void)
 }
 
 // send commands streams to pixhawk before switch to OFFBOARD mode
-void
-terpcopterMission::cmd_streams(void)
+void terpcopterMission::cmd_streams(void)
 {
     // publish current local position
     for(int i = 100; ros::ok() && i > 0; --i){
@@ -177,8 +171,7 @@ terpcopterMission::cmd_streams(void)
 }
 
 // set yaw setpoint -- unit: rad
-void
-terpcopterMission::set_yaw_sp(geometry_msgs::PoseStamped &pose, const double yaw)
+void terpcopterMission::set_yaw_sp(geometry_msgs::PoseStamped &pose, const double yaw)
 {
 	tf::Quaternion quat_yaw = tf::createQuaternionFromYaw(yaw);
 	pose.pose.orientation.x = quat_yaw.x();
@@ -188,10 +181,9 @@ terpcopterMission::set_yaw_sp(geometry_msgs::PoseStamped &pose, const double yaw
 }
 
 // set position setpoint -- unit: m
-void
-terpcopterMission::set_pos_sp(geometry_msgs::PoseStamped &pose, const double x, const double y, const double z)
+void terpcopterMission::set_pos_sp(geometry_msgs::PoseStamped &pose, const double x, const double y, const double z)
 {
-	pose.pose.position.x = x;
-    pose.pose.position.y = y;
-    pose.pose.position.z = z;
+  pose.pose.position.x = x;
+  pose.pose.position.y = y;
+  pose.pose.position.z = z;
 }

@@ -21,12 +21,13 @@ add_message_files(
   CameraInfo.msg
   Mavlink.msg
   OpticalFlow.msg
+  DetectTarget.msg
   ObstacleDetection.msg
 )
 
 add_service_files(
   DIRECTORY srv
-  FILES SetCameraInfo.srv DetectObject.srv ServoSweep.srv
+  FILES SetCameraInfo.srv DetectObject.srv ServoSweep.srv DetectTargetPose.srv
 )
 
 generate_messages(
