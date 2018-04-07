@@ -28,6 +28,8 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/MapMetaData.h>
 #include <geometry_msgs/Pose.h>
+#include <mapSpoof.h>
+
 
 ///////////////////////////////////////////
 //
@@ -43,7 +45,6 @@ int main( int argc, char** argv )
   ros::Publisher grid_pub = n.advertise<nav_msgs::OccupancyGrid>("OccupancyGrid", 1);
 
   //ros::Subscriber origin_pose = n.subscribe<geometry_msgs::Pose>("mavros/local_position/pose", 10, &terpcopterMission::local_pos_cb, this);
-  //ros::Subscriber range = n.subsribe<sensor_msgs::Range>("teraranger_one",1);
 
   while (ros::ok())
   {
@@ -52,20 +53,35 @@ int main( int argc, char** argv )
     grid.header.frame_id = "/my_frame";
     grid.header.stamp = ros::Time::now();
 
+    mapSpoof ms;
+
+    vector<int> vect;
 
     //Add grid timestamp here. this will be important for guidance later
     //grid.info.time_map_load_time = timestamp
     grid.info.resolution = 1.0; //float32 meters per cell
-    grid.info.width = 10; //uint32
-    grid.info.height = 10; //uint32
 
-    grid.data.resize(100,int(0));
+    int arena_width = 75;
+    int arena_height = 35;
 
-    for(int i=0;i<100;i++){
-      grid.data.at(i)=i;
+    int boundary_width = 0;
+
+    int obstacle_width = 7;
+    int obstacle_height = 5;
+    int obstacle_loc = 75*20+45;
+
+    grid.info.width = arena_width;
+    grid.info.height = arena_height;
+
+    grid.data.resize(arena_height*arena_width,int(0));
+    vect.resize(arena_height*arena_width,int(0));
+
+    ms.createMap(vect, arena_width, arena_height, boundary_width, obstacle_width,
+          obstacle_height, obstacle_loc);
+
+    for (int i=0;i<arena_height*arena_width;i++){
+      grid.data.at(i) = vect.at(i);
     }
-
-    //import odometry here?
 
     grid.info.origin.position.x = 0.0;
     grid.info.origin.position.y = 0.0;
@@ -84,7 +100,7 @@ int main( int argc, char** argv )
       {
         return 0;
       }
-      ROS_WARN_ONCE("Please create a subscriber to the marker");
+      ROS_WARN_ONCE("Please create a subscriber to the grid");
       sleep(1);
     }
     grid_pub.publish(grid);

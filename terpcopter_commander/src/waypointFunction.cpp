@@ -122,6 +122,18 @@ void terpcopterMission::state_machine(void)
                     main_state = ST_LAND;
                }
             break;
+            /*
+        case ST_PLANNING:
+            cout<<"Planning"<<endl;
+            for(int i=0;i<(arena_width*arena_height);i++){
+                map.at(i) = occu_grid.data.at(i);
+            }
+                
+            plan.aStarPlan(1,1,waypoints);
+                
+            main_state = ST_LAND;
+            break;
+            */
         case ST_LAND:
             if(current_state.mode == "OFFBOARD"){
                 // used same logic given in sample code for offboard mode

@@ -33,9 +33,22 @@ rosrun occupancy_map_generator occu_map_generator
 
 Check occupancy_grid publish:
 ```
-rostopic echo occupancy_grid
+rostopic echo OccupancyGrid
 //////////////////////////////////////////////
 
 Run rviz to visualize occupancy grid data:
 ```
 rosrun rviz rviz
+
+### Using tf tools
+Launch demo:
+'''
+roslaunch turtle_tf turtle_tf_demo.launch
+
+Check rotational matrix:
+'''
+rosrun tf tf_echo turtle1 turtle2
+
+Show tf graph:
+'''
+rosrun rqt_tf_tree rqt_tf_tree

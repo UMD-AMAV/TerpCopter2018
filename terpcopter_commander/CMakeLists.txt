@@ -125,6 +125,7 @@ include_directories(
 add_library(terpcopter_commander
     src/waypointFunction.cpp
     src/terpcopter_commander_main.cpp
+    src/pathPlanning.cpp
     #src/offb_main.cpp
 )
 
@@ -135,6 +136,7 @@ add_executable(terpcopter_commander_main
 
  src/terpcopter_commander_main.cpp 
  src/waypointFunction.cpp
+ src/pathPlanning.cpp
  #src/offb_main.cpp
 
 )
