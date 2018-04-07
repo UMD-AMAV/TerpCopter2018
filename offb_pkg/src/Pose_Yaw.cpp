@@ -20,7 +20,9 @@ float x_A;
 float x_B;
 float y_A;
 float y_B;
-float yaw;
+float x_C;
+float y_C;
+double yaw;
 double theta;
 int hover_return = 0;
 int yaw_return = 0;
@@ -194,6 +196,20 @@ int main(int argc, char **argv)
         if (yaw_return == 1)
         {   //ros::Duration(0.05).sleep();
             mission.traverse(r, theta, 2.0);
+            
+            /*printf("Enter Point C coordinates\n");
+            scanf("%2f %2f", &x_C,&y_C);
+            diff_X = x_C - x_B;
+            diff_Y = y_C - y_B;
+            expr = pow(diff_X,2) + pow(diff_Y,2);
+    
+    //calculating distance and yaw angle
+            r = sqrt(expr);
+            theta = atan(diff_Y/diff_X);
+            yaw_return = mission.yaw(theta);
+            if (yaw_return == 1)
+                mission.traverse(r,theta,2.0);*/
+
         }
         
       }  

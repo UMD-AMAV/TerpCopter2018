@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Program that detects black color, drws centroid and contours
+# Black Squares detection
 from __future__ import print_function
 import roslib
 #roslib.load_manifest('offb_pkg')
@@ -26,7 +26,7 @@ class image_converter:
       np_arr = np.fromstring(ros_data.data, np.uint8)
       cv_image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
       cv_image = cv2.pyrDown(cv_image)
-      #cv_image = cv2.pyrDown(cv_image)
+      cv_image = cv2.pyrDown(cv_image)
       #cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
     except CvBridgeError as e:
       print(e)

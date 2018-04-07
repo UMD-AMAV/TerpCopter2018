@@ -18,7 +18,7 @@ class image_converter:
     self.image_pub = rospy.Publisher("image_topic_2",Image,queue_size=10)
 
     self.bridge = CvBridge()
-    self.image_sub = rospy.Subscriber("/iris_opt_flow/camera_red_iris/image_raw/compressed",CompressedImage,self.callback)
+    self.image_sub = rospy.Subscriber("/camera/image/compressed",CompressedImage,self.callback) #/iris_opt_flow/camera_red_iris/image_raw/compressed
 
   def callback(self,ros_data):
     try:
@@ -33,8 +33,8 @@ class image_converter:
     (rows,cols,channels) = cv_image.shape
     hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
 
-    lower_red = np.array([0,50,50])  #0,50,50 for red 0 0 0 
-    upper_red = np.array([10,255,255]) # 10, 255, 255 for red 180 255 50
+    lower_red = np.array([0,0,0])  #0,50,50 for red 0 0 0 
+    upper_red = np.array([180,255,50]) # 10, 255, 255 for red 180 255 50
     mask = cv2.inRange(hsv, lower_red, upper_red)
 
     
@@ -55,11 +55,14 @@ class image_converter:
         center_red = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
         print(center_red)
         #cv2.circle(mask, centres[-1], 3, (0, 0, 0), -1)
-        cv2.circle(cv_image, center_red, 3, (255, 255, 255), -1)
-        #cv2.drawContours(cv_image, contour, -1, (0,255,0), 3)
+        cv2.circle(cv_image, center_red, 3, (0, 0, 255), -1)
+        cv2.drawContours(cv_image, contour, -1, (0,255,0), 3)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(cv_image,'Center Detected',(10,500), font, 1,(255,255,255),2,cv2.LINE_AA)
+        #rect = cv2.minAreaRect(contour)
         center = (int(x),int(y))
-        radius = int(radius)
-        cv_image = cv2.circle(cv_image,center,radius,(0,255,0),2)
+        #radius = int(radius)
+        #cv_image = cv2.circle(cv_image,center,radius,(0,255,0),2)
     
     
     

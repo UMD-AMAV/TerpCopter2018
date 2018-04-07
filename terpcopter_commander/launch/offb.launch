@@ -1,0 +1,3 @@
+<launch>
+  <node name="offb_main" pkg="terpcopter_commander" type="offb_main" output="screen" />
+</launch>

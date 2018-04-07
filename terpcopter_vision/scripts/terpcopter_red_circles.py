@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-# Program that detects black color, drws centroid and contours
+# Program that subscribes to video from Android phone, detects red color, draws its centroid, contours, and minimum enclosing circle
 from __future__ import print_function
 import roslib
-#roslib.load_manifest('offb_pkg')
+#roslib.load_manifest('beginner_tutorials')
 import sys
 import rospy
 import cv2
@@ -34,17 +34,15 @@ class image_converter:
     (rows,cols,channels) = cv_image.shape
     hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
 
-    lower_black = np.array([0,0,0])  #0,50,50 for red 0 0 0 
-    upper_black = np.array([180,255,50]) # 10, 255, 255 for red 180 255 50
-    mask = cv2.inRange(hsv, lower_black, upper_black)
+    lower_red = np.array([0,50,50])  #0,50,50 for red , 0 0 0 for black
+    upper_red = np.array([10,255,255]) # 10, 255, 255 for red,  180 255 50 for black
+    mask = cv2.inRange(hsv, lower_red, upper_red)
+
     
-    res = cv2.bitwise_and(cv_image,cv_image, mask= mask) #Result of the masking
-    #_, contours, _ = cv2.findContours(mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_L1)
+
+    res = cv2.bitwise_and(cv_image,cv_image, mask= mask)
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[-2]
-    
-  
-    center_black = None
-    
+    center_red = None
 
     for contour in cnts:
       area = cv2.contourArea(contour)
@@ -55,20 +53,18 @@ class image_converter:
         c = max(cnts, key=cv2.contourArea)
         ((x, y), radius) = cv2.minEnclosingCircle(c)
         M = cv2.moments(c)
-        center_black = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-        print(center_black)
+        center_red = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+        print(center_red)
         #cv2.circle(mask, centres[-1], 3, (0, 0, 0), -1)
-        cv2.circle(cv_image, center_black, 3, (255, 255, 255), -1) #draws the centroid as a white dot
-        cv2.drawContours(cv_image, contour, -1, (0,255,0), 3) #Draws contours in green
-        #rect = cv2.minAreaRect(contour)
-        #box = cv2.boxPoints(rect)
-        #box = np.int0(box)
-        #cv_image = cv2.drawContours(cv_image,[box],0,(0,0,255),2)
+        cv2.circle(cv_image, center_red, 3, (255, 255, 255), -1) #Drawing the center
+        cv2.drawContours(cv_image, contour, -1, (0,255,0), 3)
+        center = (int(x),int(y))
+        radius = int(radius)
+        cv_image = cv2.circle(cv_image,center_red,radius,(255,0,0),2)
+    
     
     
     cv2.imshow("Image window", cv_image)
-    cv2.imshow("Mask", mask)
-    cv2.imshow("Res", res)
     #cv2.imshow("Mask", mask)
     cv2.waitKey(3)
 

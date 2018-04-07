@@ -4,21 +4,21 @@ import sys
 import cv2
 import numpy as np
 def main(args):
-    cv_image = cv2.imread('/home/adarshjs/Downloads/frame23.jpg') #cv2.imdecode(np_arr, cv2.IMREAD_COLOR)#obtain the image
+    cv_image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)#obtain the image
     cv_image = cv2.pyrDown(cv_image)
     cv_image = cv2.pyrDown(cv_image)
-      #cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+    cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
     
 
     (rows,cols,channels) = cv_image.shape
     hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
 
-    lower_black = np.array([0,0,0])  #0,50,50 for red 0 0 0 
-    upper_black = np.array([180,255,50]) # 10, 255, 255 for red 180 255 50
+    lower_black = np.array([0,50,50])  #0,50,50 for red 0 0 0 
+    upper_black = np.array([10,255,255]) # 10, 255, 255 for red 180 255 50
     mask = cv2.inRange(hsv, lower_black, upper_black)
     
     res = cv2.bitwise_and(cv_image,cv_image, mask= mask) #Result of the masking
-    #_, contours, _ = cv2.findContours(mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_L1)
+    _, contours, _ = cv2.findContours(mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_L1)
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[-2]
     
   
@@ -37,19 +37,19 @@ def main(args):
             center_black = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
             print(center_black)
         #cv2.circle(mask, centres[-1], 3, (0, 0, 0), -1)
-            cv2.circle(cv_image, center_black, 3, (255, 255, 255), -1) #draws the centroid as a white dot
+            cv2.circle(cv_image, center_black, 3, (0, 0, 255), -1) #draws the centroid as a white dot
             cv2.drawContours(cv_image, contour, -1, (0,255,0), 3) #Draws contours in green
-        #rect = cv2.minAreaRect(contour)
-        #box = cv2.boxPoints(rect)
-        #box = np.int0(box)
-        #cv_image = cv2.drawContours(cv_image,[box],0,(0,0,255),2)
+        rect = cv2.minAreaRect(contour)
+        box = cv2.boxPoints(rect)
+        box = np.int0(box)
+        cv_image = cv2.drawContours(cv_image,[box],0,(0,0,255),2)
     
     
     cv2.imshow("Image window", cv_image)
     #cv2.imshow("Mask", mask)
     #cv2.imshow("Res", res)
     #cv2.imshow("Mask", mask)
-    cv2.waitKey(10000000)
+    cv2.waitKey(5)
 
 
     if KeyboardInterrupt:
