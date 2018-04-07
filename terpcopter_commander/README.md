@@ -22,7 +22,7 @@ cd ~/catkin_ws
 catkin build
 ```
 
-### Running
+### Running In Simulation
 
 Start PX4 with (from ~/src/Firmware) e.g.:
 ```
@@ -47,6 +47,22 @@ arm the vechile:
 ```
 rosrun mavros mavsafety arm
 ```
+### Running In Live Flight Test
+
+roslaunch mavros px4.launch
+```
+And launch terpcopter:
+```
+roslaunch terpcopter_commander terpcopter_commander.launch
+```
+run offboard mode:
+```
+rosrun mavros mavsys mode -c OFFBOARD
+```
+arm the vechile:
+```
+rosrun mavros mavsafety arm
+
 ### Service Test
 ```
 rossrv show [service name]
