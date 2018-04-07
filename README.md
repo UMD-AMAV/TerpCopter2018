@@ -5,8 +5,8 @@
 - [ROS](http://www.ros.org)
 - [MAVROS](https://github.com/mavlink/mavros)
 - [PX4](https://docs.px4.io/)
-- [OpenCV] (https://opencv.org/)
-- [MatLab] (https://www.mathworks.com/products/matlab.html)
+- [OpenCV](https://opencv.org/)
+- [MatLab](https://www.mathworks.com/products/matlab.html)
 
 ### Running
 
