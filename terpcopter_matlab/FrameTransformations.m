@@ -48,8 +48,8 @@ while(1)
     H_I_D(1:3,1:3)= R_I_D;
     H_I_D(:,4)= t_I_D;
     
-    t_C_T= [msgVPose.Pose.Position.X/100;
-            msgVPose.Pose.Position.Y/100;
+    t_C_T= [msgVPose.Pose.Position.X;
+            msgVPose.Pose.Position.Y;
             msgVPose.Pose.Position.Z;
             1];
         
