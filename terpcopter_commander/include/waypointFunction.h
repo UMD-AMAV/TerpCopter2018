@@ -57,6 +57,7 @@ namespace mission{
 enum MAIN_STAT{
 	ST_INIT =0,
 	ST_TAKEOFF,
+	ST_MOVE,
 	ST_SEARCH,
 	ST_REDTARGET,
 	ST_LAND
