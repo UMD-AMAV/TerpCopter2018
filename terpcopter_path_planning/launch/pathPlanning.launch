@@ -1,0 +1,8 @@
+<launch>
+  <node
+  	pkg="terpcopter_path_planning"
+  	type="terpcopter_path_planning_node"
+  	name="pathPlanning"
+  	launch-prefix="valgrind --leak-check=yes --track-origins=yes --log-file=valgrindout.txt -v"
+  	/>
+</launch>
