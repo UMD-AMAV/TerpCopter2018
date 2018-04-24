@@ -30,13 +30,17 @@
 #include <ros/console.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Pose.h>
+#include <std_msgs/String.h>
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/CommandTOL.h>
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/State.h>
 #include <nav_msgs/Odometry.h>
+#include <terpcopter_comm/DetectTargetPose.h>
 
 #include "gazebo_msgs/GetModelState.h"
 #include "gazebo_msgs/SetModelState.h"
@@ -57,9 +61,15 @@ namespace mission{
 enum MAIN_STAT{
 	ST_INIT =0,
 	ST_TAKEOFF,
-	ST_MOVE,
+	ST_MOVE1,
+	ST_OBSTACLE,
+	ST_SEARCHBOX,
 	ST_SEARCH,
-	ST_REDTARGET,
+	ST_RED,
+	ST_SEARCH2,
+	ST_BLACK,
+	ST_RETURN1,
+	ST_HOME,
 	ST_LAND
 };
 
@@ -73,7 +83,8 @@ private:
 		 // callback functions
 		 void state_cb(const mavros_msgs::State::ConstPtr& msg);
 		 void local_pos_cb(const geometry_msgs::PoseStamped::ConstPtr& msg);
-		 //void red_target_pos_cb(const geometry_msgs::PoseStamped::ConstPtr& msg);
+		 void red_target_pos_cb(const geometry_msgs::Pose::ConstPtr& msg);
+		 void waypoints_matlab_cb(const geometry_msgs::Pose::ConstPtr& msg); // callback for matlab waypoints 
 
 		 void wait_connect(void);
 
@@ -81,26 +92,29 @@ private:
 
 		 void set_yaw_sp(geometry_msgs::PoseStamped &pose, const double yaw); //yaw setpoint
 		 void set_pos_sp(geometry_msgs::PoseStamped &pose, const double x, const double y, const double z);	// set position setpoint
-		 //void redTarget_avg_sp(geometry_msgs::PoseStamped &pose_Red, int counter); // get 20 s avg values of the target
-
-
+		 
 	 	 // Subscribers 
 		 ros::Subscriber state_sub;			// get pixhawk's arming and status
-		 ros::Subscriber cur_pos_sub;			// get pixhawk current local position
-		 ros::Subscriber red_target_pos_sub;
-
+		 ros::Subscriber cur_pos_sub;		// get pixhawk current local position
+		 //ros::Subscriber redtarget_Ipos_sub;
+		 ros::Subscriber waypoints_sub;
+		 
 		 // Publishers
 		 ros::Publisher local_pos_sp_pub;		// pusblish local position setpoint to pixhawk
+		 ros::Publisher state_pub;
+
 
 		 // Services
 		 ros::ServiceClient land_client;		// land command 
 		 //ros::ServiceClient targetInertialPose_client;
 
 		 mavros_msgs::CommandTOL landing_cmd;
-		 //gazebo_msgs::SetModelState set_redTarget_pose;
-		 //gazebo_msgs::GetModelState getTargetState;
+		 //terpcopter_comm::DetectTargetPose target_pose;
+
 
 		 ros::Time landing_last_request;
+
+		 int count2; int trial;
 
 public: 
 
@@ -110,10 +124,13 @@ public:
         void tercoptermission_main(void);							// entry point
 
         geometry_msgs::PoseStamped current_local_pos; // current local postion
-		geometry_msgs::PoseStamped red_target_pos; //current red target pose
+		//geometry_msgs::Pose red_target_pos; //current red target pose
         mavros_msgs::State current_state;			// current arm status and mode
 
         geometry_msgs::PoseStamped local_pos_sp; // actual local pos sent 
+		geometry_msgs::Pose waypoints_matlab;
+		std_msgs::String state; //state machine state matlab
+		geometry_msgs::PoseStamped pose_c; 
 		
 
         uint8_t main_state;			// main state for state machine
