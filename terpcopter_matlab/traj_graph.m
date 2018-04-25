@@ -16,7 +16,10 @@
 % CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND
 % CONDITIONS.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % rosinit('10.1.10.204'); % only the first time, where IP is ROS MASTER
+% posX and posY are w/r to pixhawks (local) 
+% posX_arena w/r to arena 
 
 function traj_graph
 
@@ -35,11 +38,6 @@ launch_position = home; % initial position for flight in arena coords
 
 try
     msgPose = receive(pose,10);
-        % define offsets relative to initial pose
-    %quat=([msgPose.Pose.Orientation.W,msgPose.Pose.Orientation.X,...
-    %        msgPose.Pose.Orientation.Y,msgPose.Pose.Orientation.Z]);
-    %Eangles = rad2deg(quat2eul(quat));
-    %yaw_offset = Eangles(1);
     yaw_offset = 6; % orientation of arena +x axis (deg CCW from E)
     x_offset = msgPose.Pose.Position.X;
     y_offset = msgPose.Pose.Position.Y;
@@ -118,11 +116,14 @@ while (1)
     posZ(ii) = msgPose.Pose.Position.Z;
     
     % Transformation of X,Y points to arena frame   
-    posX_arena(ii) = (posX(ii)-x_offset) * cos(deg2rad(yaw_offset)) - ...
-        (posY(ii)-y_offset) * sin(deg2rad(yaw_offset))+launch_position(1);
-    posY_arena(ii) = (posX(ii)-x_offset) * sin(deg2rad(yaw_offset)) + ...
-        (posY(ii)-y_offset) * cos(deg2rad(yaw_offset))+launch_position(2);
-    
+%     posX_arena(ii) = (posX(ii)-x_offset) * cos(deg2rad(yaw_offset)) - ...
+%         (posY(ii)-y_offset) * sin(deg2rad(yaw_offset))+launch_position(1);
+%     posY_arena(ii) = (posX(ii)-x_offset) * sin(deg2rad(yaw_offset)) + ...
+%         (posY(ii)-y_offset) * cos(deg2rad(yaw_offset))+launch_position(2);
+
+    [posX_arena, posY_arena] = local_to_arena(posX, posY, yaw_offset, ...
+                             x_offset, y_offset, launch_position);
+                         
     quat=([msgPose.Pose.Orientation.W, msgPose.Pose.Orientation.X,...
         msgPose.Pose.Orientation.Y,msgPose.Pose.Orientation.Z]);
     Eangles = rad2deg(quat2eul(quat));
@@ -137,10 +138,10 @@ while (1)
     t = abs_t-t0;
     
     subplot(6,2,7);
-    plot(t,posX_arena(ii),'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
+    plot(t,posX_arena,'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
     
     subplot(6,2,9);
-    plot(t,posY_arena(ii),'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
+    plot(t,posY_arena,'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
     
     subplot(6,2,11);
     plot(t,posZ(ii),'b.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
@@ -191,3 +192,18 @@ catch e
 save
 rethrow(e)
 end
+end
+
+% pixhawk to arena
+function [posX_arena, posY_arena]= local_to_arena(posX, posY, ...
+            yaw_offset, x_offset, y_offset, launch_position)
+        
+    posX_arena = (posX - x_offset) * cos(deg2rad(yaw_offset)) - ...
+        (posY - y_offset) * sin(deg2rad(yaw_offset)) + launch_position(1);
+    
+    posY_arena = (posX - x_offset) * sin(deg2rad(yaw_offset)) + ...
+        (posY - y_offset) * cos(deg2rad(yaw_offset)) + launch_position(2); 
+end
+
+
+
