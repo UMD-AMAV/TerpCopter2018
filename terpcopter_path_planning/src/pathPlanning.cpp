@@ -39,7 +39,7 @@ bool pathPlanning::isValid(node nd, vector<node> &openList, vector<node> &closed
         cout<<"Node is in closed list"<<endl;
       }
     }
-    if((nd.i < 0) || (nd.i > 20) || (nd.j < 0) || (nd.j > 60)){
+    if((nd.i < 0) || (nd.i > 35) || (nd.j < 0) || (nd.j > 75)){
       valid = false;
       cout<<"Node is out of range"<<endl;
       cout<<"Node row is "<<nd.i<<" node col is "<<nd.j<<" max is "<<ROW<<" "<<COL<<endl;
@@ -223,7 +223,7 @@ void pathPlanning::reverseSearch(vector<node> &closedList,vector<node> &waypoint
       s = genSuccessor(t,k);
 
       // search closed list for node s
-      if(!((s.i < 0) || (s.i > 20) || (s.j < 0) || (s.j > 60))){
+      if(!((s.i < 0) || (s.i > 35) || (s.j < 0) || (s.j > 75))){
         for(int z=closedList.size()-1;z>=0;z--){ 
           cout<<"Searching closed list...."<<endl;
           cout<<"Successor is ("<<s.i<<","<<s.j<<")"<<endl;
@@ -244,7 +244,7 @@ void pathPlanning::reverseSearch(vector<node> &closedList,vector<node> &waypoint
         }
       }else{continue;}
       
-      if(tempI == 1 && tempJ == 1){
+      if(tempI == 10 && tempJ == 10){
         t.i = tempI;
         t.j = tempJ;
         t.g = tempG;

@@ -32,6 +32,8 @@
 #include <vector>
 #include <cmath>
 #include <list>
+#include <cstdio>
+#include <ctime>
 
 using namespace std;
 
