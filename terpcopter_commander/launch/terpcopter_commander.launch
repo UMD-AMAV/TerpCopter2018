@@ -2,8 +2,6 @@
   <node name="terpcopter_commander" pkg="terpcopter_commander" type="terpcopter_commander_main" output="screen" />
   <!--rosparam file="$(find terpcopter_commander)/yaml/waypoints.yaml" command="load" /-->
 
-  <node name="terpcopter_vision_red" pkg="terpcopter_vision" type="terpcopter_red_circles.py" output="screen" />
-
   <env name="ROSCONSOLE_CONFIG_FILE"
     value="$(find terpcopter_commander)/config/custom_rosconsole.conf"/>
 

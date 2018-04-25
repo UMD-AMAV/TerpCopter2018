@@ -38,7 +38,16 @@ int main(int argc, char **argv){
         ros::console::levels::Debug))
     ros::console::notifyLoggerLevelsChanged();
 
+    clock_t start;
+    double duration;
+    start = clock();
+
     terpcopterMission mis;
     mis.tercoptermission_main();
+
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+
+  	cout<<"\n\nProgram has taken "<< duration <<" seconds to run"<<'\n';
+
     return 0;
 }

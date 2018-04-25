@@ -85,12 +85,40 @@ void terpcopterMission::state_machine(void)
     cout<<"state machine"<<endl;
     geometry_msgs::PoseStamped pose_a;
     geometry_msgs::PoseStamped pose_b;
+    geometry_msgs::PoseStamped pose_c;
+    geometry_msgs::PoseStamped pose_d;
+    geometry_msgs::PoseStamped pose_e;
+    geometry_msgs::PoseStamped pose_f;
+    geometry_msgs::PoseStamped pose_g;
+    geometry_msgs::PoseStamped pose_h;
+    geometry_msgs::PoseStamped pose_i;
 
 	set_pos_sp(pose_a, 0.0, 0.0, 2.0); //TODO get the waypoints from file
 	set_yaw_sp(pose_a, 0);
 
-	set_pos_sp(pose_b, 1.0, 0.0, 1.5);
+	set_pos_sp(pose_b, 5.0, 4.0, 2.0);
 	set_yaw_sp(pose_b, 0);
+
+    set_pos_sp(pose_c, 11.5, 6.5, 2.0);
+    set_yaw_sp(pose_c, 0);
+
+    set_pos_sp(pose_d, 11.5, 6.5, 0.1);
+    set_yaw_sp(pose_d, 0);
+
+    set_pos_sp(pose_e, 11.5, 6.5, 2.0);
+    set_yaw_sp(pose_e, 0);
+
+    set_pos_sp(pose_f, 16.5, 2.0, 2.0);
+    set_yaw_sp(pose_f, 0);
+
+    set_pos_sp(pose_g, 16.5, 2.0, 0.2);
+    set_yaw_sp(pose_g, 0);
+
+    set_pos_sp(pose_h, 16.5, 2.0, 2.0);
+    set_yaw_sp(pose_h, 0);
+
+    set_pos_sp(pose_i, 0.0, 0.0, 2.0);
+    set_yaw_sp(pose_i, 0);
     /****************************************/
 
     switch(main_state){
@@ -110,30 +138,81 @@ void terpcopterMission::state_machine(void)
                (abs(current_local_pos.pose.position.y - pose_a.pose.position.y) < 0.1) &&
                (abs(current_local_pos.pose.position.z - pose_a.pose.position.z) < 0.1))
                {
-                    main_state = ST_MOVE; // get digital number from display
+                    main_state = ST_MOVE1; // get digital number from display
                }
             break;
-        case ST_MOVE:
+        case ST_MOVE1:
             local_pos_sp_pub.publish(pose_b);      // start sub state machine, here just publish local pos for debug convenience
             if((abs(current_local_pos.pose.position.x - pose_b.pose.position.x) < 0.1) &&
                (abs(current_local_pos.pose.position.y - pose_b.pose.position.y) < 0.1) &&
                (abs(current_local_pos.pose.position.z - pose_b.pose.position.z) < 0.1))
                {
-                    main_state = ST_LAND;
+                    main_state = ST_MOVE2;
                }
             break;
-            /*
-        case ST_PLANNING:
-            cout<<"Planning"<<endl;
-            for(int i=0;i<(arena_width*arena_height);i++){
-                map.at(i) = occu_grid.data.at(i);
-            }
-                
-            plan.aStarPlan(1,1,waypoints);
-                
-            main_state = ST_LAND;
+        case ST_MOVE2:
+            local_pos_sp_pub.publish(pose_c);      // start sub state machine, here just publish local pos for debug convenience
+            if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
+               (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
+               (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
+               {
+                    main_state = ST_MOVE3;
+               }
             break;
-            */
+        case ST_MOVE3:
+            local_pos_sp_pub.publish(pose_d);      // start sub state machine, here just publish local pos for debug convenience
+            if((abs(current_local_pos.pose.position.x - pose_d.pose.position.x) < 0.1) &&
+               (abs(current_local_pos.pose.position.y - pose_d.pose.position.y) < 0.1) &&
+               (abs(current_local_pos.pose.position.z - pose_d.pose.position.z) < 0.1))
+               {
+                    main_state = ST_MOVE4;
+               }
+            break;    
+        case ST_MOVE4:
+            local_pos_sp_pub.publish(pose_e);      // start sub state machine, here just publish local pos for debug convenience
+            if((abs(current_local_pos.pose.position.x - pose_e.pose.position.x) < 0.1) &&
+               (abs(current_local_pos.pose.position.y - pose_e.pose.position.y) < 0.1) &&
+               (abs(current_local_pos.pose.position.z - pose_e.pose.position.z) < 0.1))
+               {
+                    main_state = ST_MOVE5;
+               }
+            break;  
+        case ST_MOVE5:
+            local_pos_sp_pub.publish(pose_f);      // start sub state machine, here just publish local pos for debug convenience
+            if((abs(current_local_pos.pose.position.x - pose_f.pose.position.x) < 0.1) &&
+               (abs(current_local_pos.pose.position.y - pose_f.pose.position.y) < 0.1) &&
+               (abs(current_local_pos.pose.position.z - pose_f.pose.position.z) < 0.1))
+               {
+                    main_state = ST_MOVE6;
+               }
+            break;  
+        case ST_MOVE6:
+            local_pos_sp_pub.publish(pose_g);      // start sub state machine, here just publish local pos for debug convenience
+            if((abs(current_local_pos.pose.position.x - pose_g.pose.position.x) < 0.1) &&
+               (abs(current_local_pos.pose.position.y - pose_g.pose.position.y) < 0.1) &&
+               (abs(current_local_pos.pose.position.z - pose_g.pose.position.z) < 0.1))
+               {
+                    main_state = ST_MOVE7;
+               }
+            break;    
+        case ST_MOVE7:
+            local_pos_sp_pub.publish(pose_h);      // start sub state machine, here just publish local pos for debug convenience
+            if((abs(current_local_pos.pose.position.x - pose_h.pose.position.x) < 0.1) &&
+               (abs(current_local_pos.pose.position.y - pose_h.pose.position.y) < 0.1) &&
+               (abs(current_local_pos.pose.position.z - pose_h.pose.position.z) < 0.1))
+               {
+                    main_state = ST_MOVE8;
+               }
+            break;   
+        case ST_MOVE8:
+            local_pos_sp_pub.publish(pose_i);      // start sub state machine, here just publish local pos for debug convenience
+            if((abs(current_local_pos.pose.position.x - pose_i.pose.position.x) < 0.1) &&
+               (abs(current_local_pos.pose.position.y - pose_i.pose.position.y) < 0.1) &&
+               (abs(current_local_pos.pose.position.z - pose_i.pose.position.z) < 0.1))
+               {
+                    main_state = ST_LAND;
+               }
+            break;         
         case ST_LAND:
             if(current_state.mode == "OFFBOARD"){
                 // used same logic given in sample code for offboard mode

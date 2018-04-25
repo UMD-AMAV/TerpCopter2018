@@ -69,9 +69,17 @@ int main( int argc, char** argv )
   for(int i=0;i<(arena_width*arena_height);i++){
   	map.at(i) = occu_grid.data.at(i);
   }
+
+  clock_t start;
+  double duration;
+  start = clock();
                 
-  plan.aStarPlan(1,1,closedList,map);
+  plan.aStarPlan(10,10,closedList,map);
   plan.reverseSearch(closedList,waypoints);
+
+  duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+
+  cout<<"\n\nProgram has taken "<< duration <<" seconds to run"<<'\n';
 
   //grid_pub.publish(grid);
 
