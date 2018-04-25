@@ -47,8 +47,10 @@ arm the vechile:
 ```
 rosrun mavros mavsafety arm
 ```
-### Running In Live Flight Test
+Running In Live Flight Test
 
+First launch mavros
+'''
 roslaunch mavros px4.launch
 ```
 And launch terpcopter:

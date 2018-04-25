@@ -36,3 +36,7 @@
 /build/
 /devel/
 .catkin_workspace
+/mavros
+/mavlink
+.rosinstall
+.rosinstall.bak
