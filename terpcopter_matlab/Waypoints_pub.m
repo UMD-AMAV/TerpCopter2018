@@ -34,11 +34,16 @@ arena_Waypoints = [0 0 0 0;
 %%
 disp(' ')
 disp('Welcome to Waypoint publisher!')
-disp('Press q to quit')
 disp(' ')
+% create our clean up object
+cleanupObj = onCleanup(@cleanMeUp);
 
+%publish waypoints
 waypointPub= rospublisher('waypoints_matlab','geometry_msgs/Pose');
+
+%subscribe pose
 pose = rossubscriber('/mavros/local_position/pose');
+%subscribe state from state machine
 state = rossubscriber('/stateMachine');
 
 home = [10,10]*0.3048; % m
@@ -64,10 +69,6 @@ msgWaypoint = rosmessage(waypointPub);
 local_Waypoints = zeros(size(arena_Waypoints));
 local_Waypoints(:,3:4) = arena_Waypoints(:,3:4);
 
-% use these points for simulation 
-% local_Waypoints = [0 0 0 0;
-%                    0 0 2 0; 
-%                    1 0 1.5 0];
 
 % convert the waypoints from arena cord. to pixhawks
 for ii = 1 : length
@@ -77,13 +78,25 @@ for ii = 1 : length
     local_Waypoints(ii,1)= posX_local; 
     local_Waypoints(ii,2)= posY_local;  
 end
-   
+
+% % use these points (uncomment) for simulation 
+% local_Waypoints = [0 0 0 0;
+%                    0 0 2 0; 
+%                    1 0 1.5 0];
+ 
 try
 while (1)
+   try 
+        msgState = receive(state,10);
+   catch e
+       fprintf(1,'The identifier was:\n%s',e.identifier);
+       fprintf(1,'There was an error! The message was:\n%s',e.message);
+       continue
+    end
     
    if(msgState.Data == terpcopter_states(1))
-       msgWaypoint.Position.X = local_Waypoints(1,1); 
-       msgWaypoint.Position.Y = local_Waypoints(1,2);
+       msgWaypoint.Position.X = local_Waypoints(1,1);
+       msgWaypoint.Position.X = local_Waypoints(1,2);
        msgWaypoint.Position.Z = local_Waypoints(1,3);
        
        q_pixhawk= arena_to_local_orientation(local_Waypoints(1,4), yaw_offset);
@@ -95,12 +108,14 @@ while (1)
        send(waypointPub,msgWaypoint);
 
        fprintf('%s \n state',msgState.Data);
+       fprintf('X: %f, Y: %f, Z: %f \n',msgWaypoint.Position.X,...
+           msgWaypoint.Position.Y,msgWaypoint.Position.Z);
    end
     
    if(msgState.Data == terpcopter_states(2))
-       msgWaypoint.Position.X = local_Waypoints(2,1); 
-       msgWaypoint.Position.Y = local_Waypoints(2,2);
-       msgWaypoint.Position.Z = local_Waypoints(2,3);
+       msgWaypoint.Position.X = local_Waypoints(2,1) 
+       msgWaypoint.Position.Y = local_Waypoints(2,2)
+       msgWaypoint.Position.Z = local_Waypoints(2,3)
        
        q_pixhawk= arena_to_local_orientation(local_Waypoints(2,4), yaw_offset);
        msgWaypoint.Orientation.X = q_pixhawk(1); 
@@ -110,13 +125,15 @@ while (1)
 
        send(waypointPub,msgWaypoint);
        
-       fprintf('%s \n state',msgState.Data);
+       fprintf('%s \n Tstate',msgState.Data);
+       fprintf('X: %f, Y: %f, Z: %f \n',msgWaypoint.Position.X,...
+           msgWaypoint.Position.Y,msgWaypoint.Position.Z);
    end
    
    if(msgState.Data == terpcopter_states(3))
-       msgWaypoint.Position.X = local_Waypoints(3,1); 
-       msgWaypoint.Position.Y = local_Waypoints(3,2);
-       msgWaypoint.Position.Z = local_Waypoints(3,3);
+       msgWaypoint.Position.X = local_Waypoints(3,1)
+       msgWaypoint.Position.Y = local_Waypoints(3,2)
+       msgWaypoint.Position.Z = local_Waypoints(3,3)
        
        q_pixhawk= arena_to_local_orientation(local_Waypoints(3,4), yaw_offset);
        msgWaypoint.Orientation.X = q_pixhawk(1); 
@@ -126,16 +143,17 @@ while (1)
 
        send(waypointPub,msgWaypoint);
        
-       fprintf('%s \n state',msgState.Data);
+       fprintf('%s \n Mstate',msgState.Data);
+       fprintf('X: %f, Y: %f, Z: %f \n',msgWaypoint.Position.X,...
+           msgWaypoint.Position.Y,msgWaypoint.Position.Z);
    end
-  
-  
+
 end
 catch e
-save('Waypoint_pub');
 rethrow(e)
 end
-end
+
+
 
 % arena to pixhawk (waypoints in arena frame and transforms to pixhawks)
 function [posX_pixhawk, posY_pixhawk] = arena_to_local(waypointX, waypointY, ...
@@ -155,4 +173,13 @@ function q_pixhawk = arena_to_local_orientation(yaw_arena, yaw_offset)
     yaw_pixhawk = yaw_arena + yaw_offset;
     q_pixhawk= angle2quat(roll, pitch, deg2rad(yaw_pixhawk), 'XYZ');
     
+end
+
+function cleanMeUp()
+        % saves data to file (or could save to workspace)
+        fprintf('saving variables to file...\n');
+        filename = ['waypoint' datestr(now,'yyyy-mm-dd_HHMMSS') '.mat'];
+        save(filename);
+    end
+
 end
