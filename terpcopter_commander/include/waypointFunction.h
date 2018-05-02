@@ -1,4 +1,3 @@
-
 //
 // THIS HEADER FILE CONTAINS LIBRARIES AND FUNCTION FOR TERPCOPTER MISSION
 //
@@ -33,6 +32,7 @@
 #include <iostream>
 
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/Pose.h>
 #include <std_msgs/String.h>
 #include <mavros_msgs/CommandBool.h>
@@ -40,7 +40,7 @@
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/State.h>
 #include <nav_msgs/Odometry.h>
-#include <terpcopter_comm/DetectTargetPose.h>
+
 
 #include "gazebo_msgs/GetModelState.h"
 #include "gazebo_msgs/SetModelState.h"
@@ -62,14 +62,14 @@ enum MAIN_STAT{
 	ST_INIT =0,
 	ST_TAKEOFF,
 	ST_MOVE1,
-	ST_OBSTACLE,
-	ST_SEARCHBOX,
-	ST_SEARCH,
-	ST_RED,
-	ST_SEARCH2,
-	ST_BLACK,
-	ST_RETURN1,
-	ST_HOME,
+	// ST_OBSTACLE,
+	// ST_SEARCHBOX,
+	// ST_SEARCH,
+	// ST_RED,
+	// ST_SEARCH2,
+	// ST_BLACK,
+	// ST_RETURN1,
+	// ST_HOME,
 	ST_LAND
 };
 
@@ -84,7 +84,7 @@ private:
 		 void state_cb(const mavros_msgs::State::ConstPtr& msg);
 		 void local_pos_cb(const geometry_msgs::PoseStamped::ConstPtr& msg);
 		 void red_target_pos_cb(const geometry_msgs::Pose::ConstPtr& msg);
-		 void waypoints_matlab_cb(const geometry_msgs::Pose::ConstPtr& msg); // callback for matlab waypoints 
+		 void waypoints_matlab_cb(const geometry_msgs::PoseArray::ConstPtr& msg); // callback for matlab waypoints 
 
 		 void wait_connect(void);
 
@@ -128,7 +128,7 @@ public:
         mavros_msgs::State current_state;			// current arm status and mode
 
         geometry_msgs::PoseStamped local_pos_sp; // actual local pos sent 
-		geometry_msgs::Pose waypoints_matlab;
+		geometry_msgs::PoseArray waypoints_matlab;
 		std_msgs::String state; //state machine state matlab
 		geometry_msgs::PoseStamped pose_c; 
 		
