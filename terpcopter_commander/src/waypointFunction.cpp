@@ -3,6 +3,10 @@
 using namespace mission;
 using namespace std;
 
+int wp_received = 0;
+
+double pose_array[10][4];
+int num_states = 3;
 // constructor
 terpcopterMission::terpcopterMission():
 main_state(ST_INIT),
@@ -23,7 +27,7 @@ void terpcopterMission::tercoptermission_main(void){
     state_sub = nh.subscribe<mavros_msgs::State>("mavros/state", 10, &terpcopterMission::state_cb, this);
     cur_pos_sub = nh.subscribe<geometry_msgs::PoseStamped>("mavros/local_position/pose", 10, &terpcopterMission::local_pos_cb, this);
     //redtarget_Ipos_sub = nh.subscribe<geometry_msgs::Pose>("InertialTargetPose", 10, &terpcopterMission::red_target_pos_cb, this); //check this same call back function
-    waypoints_sub = nh.subscribe<geometry_msgs::Pose>("waypoints_matlab", 10, &terpcopterMission::waypoints_matlab_cb, this);
+    waypoints_sub = nh.subscribe<geometry_msgs::PoseArray>("waypoints_matlab", 10, &terpcopterMission::waypoints_matlab_cb, this);
     
     // publishers init
     local_pos_sp_pub = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
@@ -43,17 +47,13 @@ void terpcopterMission::tercoptermission_main(void){
     landing_last_request = ros::Time::now();
     count2 = 0;
     trial =1;
-
-    // float xstore=[];
-    // float ystore=[];
-    
-
+ 
     // state machine
     while(ros::ok()){
 
-		if(!current_state.armed){
-			main_state = ST_INIT;
-		}
+        if(!current_state.armed){
+            main_state = ST_INIT;
+        }
         
         state_machine();
         ros::spinOnce();
@@ -63,35 +63,23 @@ void terpcopterMission::tercoptermission_main(void){
 
 void terpcopterMission::state_machine(void)
 {
-    /***************** TODO: get values from file ***********************/
     ROS_DEBUG_ONCE("State Machine"); // message will be printed only once
-    //geometry_msgs::PoseStamped pose_a;
-    //geometry_msgs::PoseStamped pose_b;
-    
-    //terpcopter_comm::DetectTargetPose srv;
-    //std_msgs::Empty sts;
-    
-	// set_pos_sp(pose_a, 0.0, 0.0, 2.5); //TODO get the waypoints from file
-	// set_yaw_sp(pose_a, 0.0);
 
-	// set_pos_sp(pose_b, 2.0, 1.0, 2.5);
-	// set_yaw_sp(pose_b, 0.0);
-
-    // set_pos_sp(pose_c, 2, 1.0, 2.0);
-	// set_yaw_sp(pose_c, 0.0);
-
-    /****************************************/
-
-    switch(main_state){
+    switch(main_state)
+    {
         case ST_INIT:
         {
             state.data = "INIT";
             state_pub.publish(state);
 
-            local_pos_sp_pub.publish(current_local_pos);
-            if(current_state.armed && current_state.mode == "OFFBOARD")    // start mission
+            set_pos_sp(pose_c, pose_array[0][0], pose_array[0][1], pose_array[0][2]);
+            set_yaw_sp(pose_c, pose_array[0][3]);
+            local_pos_sp_pub.publish(pose_c);
+
+            if(current_state.armed && current_state.mode == "OFFBOARD" && wp_received == 1)    // start mission
             {
                 main_state = ST_TAKEOFF;
+            
             }
         }
             break;
@@ -103,55 +91,38 @@ void terpcopterMission::state_machine(void)
             state.data = "TAKEOFF";
             state_pub.publish(state);
 
-            pose_c.pose.position.x = waypoints_matlab.position.x;
-            pose_c.pose.position.y = waypoints_matlab.position.y;
-            pose_c.pose.position.z = waypoints_matlab.position.z;
-
-            pose_c.pose.orientation.x = waypoints_matlab.orientation.x;
-            pose_c.pose.orientation.y = waypoints_matlab.orientation.y;
-            pose_c.pose.orientation.z = waypoints_matlab.orientation.z;
-            pose_c.pose.orientation.w = waypoints_matlab.orientation.w;
-
-
-            local_pos_sp_pub.publish(pose_c);      // publish display's local position
-            ROS_INFO("Current pose-> X: [%f], Y: [%f], Z: [%f]",pose_c.pose.position.x,current_local_pos.pose.position.y,
-            pose_c.pose.position.z);
-
-            ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
-            abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
-            abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
+            set_pos_sp(pose_c, pose_array[1][0], pose_array[1][1], pose_array[1][2]);
+            set_yaw_sp(pose_c, pose_array[1][3]);
+            local_pos_sp_pub.publish(pose_c);
 
             if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
-               {
+               {    cout<<"Takeoff Checked \n";
                     main_state = ST_MOVE1; // get digital number from display
+                    
                }
         }
             break;
 
         case ST_MOVE1:
         {
-            ROS_DEBUG_ONCE("Move1");
-
+            //ROS_DEBUG_ONCE("Move1");
+            //cout<<"In Move1\n";    
             state.data = "MOVE1";
             state_pub.publish(state);
+            cout<<"Published Move1 \n";
 
-            pose_c.pose.position.x = waypoints_matlab.position.x;
-            pose_c.pose.position.y = waypoints_matlab.position.y;
-            pose_c.pose.position.z = waypoints_matlab.position.z;
-
-            pose_c.pose.orientation.x = waypoints_matlab.orientation.x;
-            pose_c.pose.orientation.y = waypoints_matlab.orientation.y;
-            pose_c.pose.orientation.z = waypoints_matlab.orientation.z;
-            pose_c.pose.orientation.w = waypoints_matlab.orientation.w;
-
-            local_pos_sp_pub.publish(pose_c);      // start sub state machine, here just publish local pos for debug convenience
+            set_pos_sp(pose_c, pose_array[2][0], pose_array[2][1], pose_array[2][2]);
+            set_yaw_sp(pose_c, pose_array[2][3]);
+            local_pos_sp_pub.publish(pose_c);
+            
             if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
-               {
+               {    cout<<"MOVE1 Checked \n";
                     main_state = ST_LAND;
+                    
                }
         }
             break;
@@ -258,9 +229,44 @@ void terpcopterMission::local_pos_cb(const geometry_msgs::PoseStamped::ConstPtr&
 // }
 
 // waypoints pose subscriber callback function
-void terpcopterMission::waypoints_matlab_cb(const geometry_msgs::Pose::ConstPtr& msg)
-{
+void terpcopterMission::waypoints_matlab_cb(const geometry_msgs::PoseArray::ConstPtr& msg)
+{   
+    wp_received = 1;
     waypoints_matlab = *msg;
+    
+    int i =0;
+    while (!waypoints_matlab.poses.empty() && i < num_states)
+    {
+        
+        pose_array[i][0] = waypoints_matlab.poses[i].position.x;
+        pose_array[i][1] = waypoints_matlab.poses[i].position.y;
+        pose_array[i][2] = waypoints_matlab.poses[i].position.z;
+        pose_array[i][3] = waypoints_matlab.poses[i].orientation.z;
+
+        cout<<"condition satisfied\n";
+        //cout<<pose_array[i]<<"%d \t"<<i<<endl;
+        i = i+1;
+        
+    }
+
+    for (int i = 0; i<num_states; i++)
+    {
+        for(int j = 0;j<4;j++)
+            cout<<pose_array[i][j]<<" ";
+        cout<<endl;
+    }   
+
+       
+
+
+    //local_pos_sp_pub.publish(pose_c);      // publish display's local position
+
+    ROS_INFO("MATLAB Waypoint pose-> X: [%f], Y: [%f], Z: [%f]",pose_c.pose.position.x, pose_c.pose.position.y,
+    pose_c.pose.position.z); 
+
+    ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
+    abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
+    abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
 }
 
 // wait for mavros connecting with pixhawk
@@ -286,17 +292,17 @@ void terpcopterMission::cmd_streams(void)
 // set yaw setpoint -- unit: rad
 void terpcopterMission::set_yaw_sp(geometry_msgs::PoseStamped &pose, const double yaw)
 {
-	tf::Quaternion quat_yaw = tf::createQuaternionFromYaw(yaw);
-	pose.pose.orientation.x = quat_yaw.x();
-	pose.pose.orientation.y = quat_yaw.y();
-	pose.pose.orientation.z = quat_yaw.z();
-	pose.pose.orientation.w = quat_yaw.w();
+    tf::Quaternion quat_yaw = tf::createQuaternionFromYaw(yaw);
+    pose.pose.orientation.x = quat_yaw.x();
+    pose.pose.orientation.y = quat_yaw.y();
+    pose.pose.orientation.z = quat_yaw.z();
+    pose.pose.orientation.w = quat_yaw.w();
 }
 
 // set position setpoint -- unit: m
 void terpcopterMission::set_pos_sp(geometry_msgs::PoseStamped &pose, const double x, const double y, const double z)
 {
-	pose.pose.position.x = x;
+    pose.pose.position.x = x;
     pose.pose.position.y = y;
     pose.pose.position.z = z;
 }
