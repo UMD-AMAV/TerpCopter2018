@@ -29,9 +29,6 @@ find_package(Eigen REQUIRED)
 
 find_package(OpenCV 3.1.0 REQUIRED)
 
-generate_dynamic_reconfigure_options(
-  cfg/TerarangerOne.cfg
-)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -155,7 +152,7 @@ include_directories(
 ## Declare a C++ executable
 # add_executable(terpcopter_driver_node src/terpcopter_driver_node.cpp)
 add_executable(terpcopter_camera_node src/terpcopter_camera_node.cpp)
-add_executable(terpcopter_teraranger_node src/teraranger_serial_comm.cpp src/terpcopter_teraranger_node.cpp)
+
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -167,7 +164,6 @@ add_executable(terpcopter_teraranger_node src/teraranger_serial_comm.cpp src/ter
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(terpcopter_camera_node  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} )
-target_link_libraries(terpcopter_teraranger_node   ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
 
 
 

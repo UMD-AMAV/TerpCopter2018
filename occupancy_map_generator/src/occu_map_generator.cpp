@@ -66,9 +66,9 @@ int main( int argc, char** argv )
 
     int boundary_width = 0;
 
-    int obstacle_width = 7;
-    int obstacle_height = 5;
-    int obstacle_loc = 75*20+45;
+    int obstacle_width = 10;
+    int obstacle_height = 10;
+    int obstacle_loc = 75*25+45;
 
     grid.info.width = arena_width;
     grid.info.height = arena_height;
