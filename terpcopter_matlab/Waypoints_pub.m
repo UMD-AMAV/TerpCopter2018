@@ -25,10 +25,14 @@ terpcopter_states = string(["INIT","TAKEOFF", "MOVE1"]);%, "OBSTACLE", "SEARCHBO
 
 [~,stateSize] = size(terpcopter_states);
 
-% INSERT WAYPOINTS HERE %X(m) Y(m) Z(m) YAW(deg)
-arena_Waypoints = [0 0 0 0;
-                   0 0 2 0; 
-                   1 0 1.5 0];
+home = [10,10]*0.3048; % in meters
+launch_position = home; % initial position for flight in arena coords
+
+% INSERT WAYPOINTS HERE 
+%X(m) Y(m) Z(m) YAW(deg) W/r to (0,0) I frame of arena
+arena_Waypoints = [launch_position(1) launch_position(2) 0 0;
+                   launch_position(1) launch_position(2) 2 0; 
+                   launch_position(1)+0.5 launch_position(2) 1.5 0];
 
 %%
 disp(' ')
@@ -49,13 +53,10 @@ pose = rossubscriber('/mavros/local_position/pose');
 %subscribe state from state machine
 state = rossubscriber('/stateMachine');
 
-home = [10,10]*0.3048; % in meters
-launch_position = home; % initial position for flight in arena coords
-
 try
     %msgState = receive(state,10);
     msgPose = receive(pose,10);
-    yaw_offset = 6; % orientation of arena +x axis (deg CCW from E)
+    yaw_offset = -23; % orientation of arena +x axis (deg CCW from E)
     x_offset = msgPose.Pose.Position.X;
     y_offset = msgPose.Pose.Position.Y;
 catch e
@@ -83,10 +84,14 @@ for ii = 1 : length
     [posX_local, posY_local] = arena_to_local(arena_Waypoints(ii,1), arena_Waypoints(ii,2), ...
             yaw_offset, x_offset, y_offset, launch_position);
         
+    yaw_pixhawk = arena_to_local_orientation(arena_Waypoints(ii,4), yaw_offset);
+        
     local_Waypoints(ii,1)= posX_local; 
-    local_Waypoints(ii,2)= posY_local;  
+    local_Waypoints(ii,2)= posY_local;
+    local_Waypoints(ii,4)= yaw_pixhawk;
 end
 
+local_Waypoints
 % use these points (uncomment) for simulation 
 % local_Waypoints = [0 0 0 0;
 %                    0 0 2 40; 
@@ -110,6 +115,7 @@ while (counter < 500)
    counter = counter +1;
 end
 
+fprintf("Setpoints sent");
 
 try
 while (1)
@@ -128,24 +134,24 @@ while (1)
        fprintf('INIT \n')
        
        fprintf(fileID,'%s \n',msgState.Data);
-%        fprintf(fileID,'X: %f, Y: %f, Z: %f \n',msgWaypoint.Position.X,...
-%            msgWaypoint.Position.Y,msgWaypoint.Position.Z);
+       fprintf(fileID,'X: %f, Y: %f, Z: %f \n',msgPose.Pose.Position.X,...
+           msgPose.Pose.Position.Y,msgPose.Pose.Position.Z);
    end
     
    if(msgState.Data == terpcopter_states(2))
        fprintf('TAKEOFF \n')
        
        fprintf(fileID,'%s \n',msgState.Data);
-%        fprintf(fileID,'X: %f, Y: %f, Z: %f \n',msgWaypoint.Position.X,...
-%            msgWaypoint.Position.Y,msgWaypoint.Position.Z);
+       fprintf(fileID,'X: %f, Y: %f, Z: %f \n',msgPose.Pose.Position.X,...
+           msgPose.Pose.Position.Y,msgPose.Pose.Position.Z);
    end
    
    if(msgState.Data == terpcopter_states(3))
        fprintf('MOVE1 \n')
        
        fprintf(fileID,'%s \n',msgState.Data);
-%        fprintf(fileID,'X: %f, Y: %f, Z: %f \n',msgWaypoint.Position.X,...
-%            msgWaypoint.Position.Y,msgWaypoint.Position.Z);
+       fprintf(fileID,'X: %f, Y: %f, Z: %f \n',msgPose.Pose.Position.X,...
+           msgPose.Pose.Position.Y,msgPose.Pose.Position.Z);
    end
    
 end
@@ -158,19 +164,23 @@ function [posX_pixhawk, posY_pixhawk] = arena_to_local(waypointX, waypointY, ...
             yaw_offset, x_offset, y_offset, launch_position)
         
 % singularity if yaw_offset= n*90 and n*270;
-    posX_pixhawk = (waypointX - launch_position(1) + x_offset * cos(yaw_offset) +...
-        waypointY * sin(yaw_offset)- y_offset * sin(yaw_offset)) / cos(yaw_offset);
+  posX_pixhawk = (x_offset*cos(deg2rad(yaw_offset))^2 + x_offset*sin(deg2rad(yaw_offset))^2 ... 
+    - launch_position(1)*cos(deg2rad(yaw_offset)) + waypointX*cos(deg2rad(yaw_offset)) ... 
+    - launch_position(2)*sin(deg2rad(yaw_offset))+ waypointY*sin(deg2rad(yaw_offset)))...
+    /(cos(deg2rad(yaw_offset))^2 + sin(deg2rad(yaw_offset))^2);
 
-    posY_pixhawk = (waypointY - launch_position(2) - waypointX * sin(yaw_offset) +...
-        x_offset * sin(yaw_offset) + y_offset * cos(yaw_offset)) / cos(yaw_offset);
+
+  posY_pixhawk = (y_offset*cos(deg2rad(yaw_offset))^2 + y_offset*sin(deg2rad(yaw_offset))^2 ...
+    - launch_position(2)*cos(deg2rad(yaw_offset)) + waypointY*cos(deg2rad(yaw_offset)) ...
+    + launch_position(1)*sin(deg2rad(yaw_offset)) - waypointX*sin(deg2rad(yaw_offset))) ...
+    /(cos(deg2rad(yaw_offset))^2 + sin(deg2rad(yaw_offset))^2);
         
 end
 
-function q_pixhawk = arena_to_local_orientation(yaw_arena, yaw_offset)
+function yaw_pixhawk = arena_to_local_orientation(yaw_arena, yaw_offset)
     pitch = 0; roll = 0;
     yaw_pixhawk = yaw_arena + yaw_offset;
-    q_pixhawk= angle2quat(roll, pitch, deg2rad(yaw_pixhawk), 'XYZ');
-    
+    %q_pixhawk= angle2quat(roll, pitch, deg2rad(yaw_pixhawk), 'XYZ');  
 end
 % 
 % % function cleanMeUp()
