@@ -94,6 +94,13 @@ void terpcopterMission::state_machine(void)
             set_pos_sp(pose_c, pose_array[1][0], pose_array[1][1], pose_array[1][2]);
             set_yaw_sp(pose_c, pose_array[1][3]);
             local_pos_sp_pub.publish(pose_c);
+            
+            ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
+            current_local_pos.pose.position.y, current_local_pos.pose.position.z);
+            
+            ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
+            abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
+            abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
 
             if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
@@ -107,7 +114,7 @@ void terpcopterMission::state_machine(void)
 
         case ST_MOVE1:
         {
-            //ROS_DEBUG_ONCE("Move1");
+            ROS_DEBUG_ONCE("Move1");
             //cout<<"In Move1\n";    
             state.data = "MOVE1";
             state_pub.publish(state);
@@ -116,6 +123,13 @@ void terpcopterMission::state_machine(void)
             set_pos_sp(pose_c, pose_array[2][0], pose_array[2][1], pose_array[2][2]);
             set_yaw_sp(pose_c, pose_array[2][3]);
             local_pos_sp_pub.publish(pose_c);
+            
+            ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
+            current_local_pos.pose.position.y, current_local_pos.pose.position.z);
+            
+            ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
+            abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
+            abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
             
             if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
@@ -263,10 +277,6 @@ void terpcopterMission::waypoints_matlab_cb(const geometry_msgs::PoseArray::Cons
 
     ROS_INFO("MATLAB Waypoint pose-> X: [%f], Y: [%f], Z: [%f]",pose_c.pose.position.x, pose_c.pose.position.y,
     pose_c.pose.position.z); 
-
-    ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
-    abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
-    abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
 }
 
 // wait for mavros connecting with pixhawk
