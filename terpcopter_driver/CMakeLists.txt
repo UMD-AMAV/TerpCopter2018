@@ -106,6 +106,11 @@ find_package(OpenCV 3.1.0 REQUIRED)
 #   cfg/DynReconf2.cfg
 # )
 
+# For from teraranger cmakelists
+generate_dynamic_reconfigure_options(
+  cfg/TerarangerOne.cfg
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -151,12 +156,17 @@ include_directories(
 
 ## Declare a C++ executable
 # add_executable(terpcopter_driver_node src/terpcopter_driver_node.cpp)
+
 add_executable(terpcopter_camera_node src/terpcopter_camera_node.cpp)
+add_executable( terpcopter_terarangerone_node src/terarangerone.cpp src/serial_port.cpp  )
 
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(terpcopter_driver_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_dependencies( terpcopter_terarangerone_node  ${catkin_EXPORTED_TARGETS} )
+add_dependencies( terpcopter_terarangerone_node ${PROJECT_NAME}_gencfg)
 
 
 ## Specify libraries to link a library or executable target against
@@ -164,6 +174,7 @@ add_executable(terpcopter_camera_node src/terpcopter_camera_node.cpp)
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(terpcopter_camera_node  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} )
+target_link_libraries( terpcopter_terarangerone_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
 
 
 
