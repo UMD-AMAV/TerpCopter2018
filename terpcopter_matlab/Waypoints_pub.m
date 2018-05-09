@@ -120,6 +120,7 @@ fprintf("Setpoints sent");
 try
 while (1)
    try 
+        msgPose = receive(pose,10);
         msgState = receive(state,10);
    catch e
        fprintf(1,'The identifier was:\n%s',e.identifier);
