@@ -1,12 +1,24 @@
 <launch>
   <node name="terpcopter_commander" pkg="terpcopter_commander" type="terpcopter_commander_main" output="screen" />
-  <!--rosparam file="$(find terpcopter_commander)/yaml/waypoints.yaml" command="load" /-->
 
-  <node name="terpcopter_vision_red" pkg="terpcopter_vision" type="terpcopter_red_circles.py" output="screen" />
+  <!-- camera launch -->
+  <node name="terpcopter_camera_node" pkg="terpcopter_driver" type="terpcopter_camera_node" >
+    <param name="forward_camera_id" type="int" value="0" />
+  </node>
 
+<!-- terranger launch -->
+  <node name="terpcopter_terarangerone_node" pkg="terpcopter_driver" type="terpcopter_terarangerone_node" >
+		<param name="serial_port" type="str" value="/dev/ttyUSB1" />
+  </node>
+
+<!-- vision launch -->
+<!--   <node name="terpcopter_vision_red" pkg="terpcopter_vision" type="terpcopter_red_circles.py" output="screen" />
+  <node name="terpcopter_vision_black" pkg="terpcopter_vision" type="terpcopter_black_square.py" output="screen" />
+  <node name="terpcopter_vision_home" pkg="terpcopter_vision" type="terpcopter_homebase.py" output="screen" />
+ -->
   <env name="ROSCONSOLE_CONFIG_FILE"
     value="$(find terpcopter_commander)/config/custom_rosconsole.conf"/>
 
-  <node name="image_view" pkg="image_view" type="image_view" output="screen" args="image:=/red_detection"/>
+  <!-- <node name="image_view" pkg="image_view" type="image_view" output="screen" args="image:=/red_detection"/> -->
   
 </launch>

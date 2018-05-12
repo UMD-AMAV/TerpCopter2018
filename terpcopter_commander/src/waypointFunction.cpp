@@ -17,6 +17,11 @@ int increment = 0.5;
 double pose_array[15][4];
 int num_states = 15;
 
+
+double x_curr;
+double y_curr;
+
+
 // constructor
 terpcopterMission::terpcopterMission():
 main_state(ST_INIT),
@@ -147,48 +152,48 @@ void terpcopterMission::state_machine(void)
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
                {    
                     cout<<"MOVE1 Checked \n";
-                    main_state = ST_OBSTACLE;
+                    main_state = ST_BOXMOVE;
                     
                }
         }
             break;
 
-        case ST_OBSTACLE: // has to be changed to accommodate the Terraranger 
-        {
-            ROS_DEBUG_ONCE("Obstacle");
-            //cout<<"In Move1\n";    
-            state.data = "OBSTACLE2";
-            state_pub.publish(state);
-            cout<<"Published Obstacle2 \n";
+        // case ST_OBSTACLE: // has to be changed to accommodate the Terraranger 
+        // {
+        //     ROS_DEBUG_ONCE("Obstacle");
+        //     //cout<<"In Move1\n";    
+        //     state.data = "OBSTACLE2";
+        //     state_pub.publish(state);
+        //     cout<<"Published Obstacle2 \n";
 
-            while (obstacle_range.range < 1.3){
+        //     while (obstacle_range.range < 1.3){
 
-                ROS_INFO("obstacle detected");
+        //         ROS_INFO("obstacle detected");
                 
-                set_pos_sp(pose_c, current_local_pos.pose.position.x + increment, current_local_pos.pose.position.y,
-                 current_local_pos.pose.position.z); //moves to the left
+        //         set_pos_sp(pose_c, current_local_pos.pose.position.x + increment, current_local_pos.pose.position.y,
+        //          current_local_pos.pose.position.z); //moves to the left
                 
-                local_pos_sp_pub.publish(pose_c);
-                cout<<"Published set points to avoid obstacle while going forward. \n";
+        //         local_pos_sp_pub.publish(pose_c);
+        //         cout<<"Published set points to avoid obstacle while going forward. \n";
                
-               if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
-                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
-                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1)) {    
+        //        if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
+        //         (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
+        //         (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1)) {    
     
-                    continue;    
-               }
+        //             continue;    
+        //        }
 
-            }
+        //     }
 
-            if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
-                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
-                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1)) {    
+        //     if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
+        //         (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
+        //         (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1)) {    
                     
-                    main_state = ST_BOXMOVE;
+        //             main_state = ST_BOXMOVE;
                     
-               }
-        }
-        	break;
+        //        }
+        // }
+        // 	break;
         
         case ST_BOXMOVE:
         {
@@ -235,34 +240,36 @@ void terpcopterMission::state_machine(void)
             // ROS_INFO("MATLAB Waypoint pose-> X: [%f], Y: [%f], Z: [%f]", pose_c.pose.position.x, pose_c.pose.position.y,
             // pose_c.pose.position.z); 
             
-            ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
-            current_local_pos.pose.position.y, current_local_pos.pose.position.z);
+            // ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
+            // current_local_pos.pose.position.y, current_local_pos.pose.position.z);
             
-            ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
-            abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
-            abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
+            // ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
+            // abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
+            // abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
             
             // check if red or black has been found
             // if red has been found, then go to red state.
             // if black has been found before red was found, then go to search 2
 
             //Checking if red has been spotted
-            if (red_target_pos.header.frame_id == "redTargetDetected")
+            
+            x_curr = current_local_pos.pose.position.x;
+            y_curr = current_local_pos.pose.position.y;
+
+            if (red_target_pos.header.frame_id == "redTargetDetected" && red_flag!= 1)
             {
             	cout<<"Red target detected\n";
-                set_pos_sp(pose_c, current_local_pos.pose.position.x, current_local_pos.pose.position.y,
-                 current_local_pos.pose.position.z);
+                set_pos_sp(pose_c, x_curr, y_curr, 2.0);
 
             	main_state = ST_RED;
 
             }
 
             //Checking if red has been spotted
-            if (red_target_pos.header.frame_id == "blackTargetDetected" && red_flag == 1)
+            if (black_target_pos.header.frame_id == "blackTargetDetected" && red_flag == 1)
             {
                 cout<<"Red target detected\n";
-                set_pos_sp(pose_c, current_local_pos.pose.position.x, current_local_pos.pose.position.y,
-                 current_local_pos.pose.position.z);
+                 set_pos_sp(pose_c, x_curr, y_curr, 2.0);
 
                 main_state = ST_BLACK;
 
@@ -274,7 +281,10 @@ void terpcopterMission::state_machine(void)
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
                {    
                     cout<<"Search1 state Reached \n";
-                    main_state = ST_SEARCH2;
+                    if (main_state != ST_RED && main_state != ST_BLACK)
+                        main_state = ST_SEARCH2;
+
+                    
                }
         }
 
@@ -292,27 +302,29 @@ void terpcopterMission::state_machine(void)
             set_yaw_sp(pose_c, pose_array[6][3]);
             local_pos_sp_pub.publish(pose_c);
             
-            ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
-            current_local_pos.pose.position.y, current_local_pos.pose.position.z);
+            // ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
+            // current_local_pos.pose.position.y, current_local_pos.pose.position.z);
             
-            ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
-            abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
-            abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
+            // ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
+            // abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
+            // abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
+
+             x_curr = current_local_pos.pose.position.x;
+             y_curr = current_local_pos.pose.position.y;
+
             
-            if (red_target_pos.header.frame_id == "redTargetDetected")
+            if (red_target_pos.header.frame_id == "redTargetDetected" && red_flag!= 1)
             {
             	cout<<"Red target detected\n";
-                set_pos_sp(pose_c, current_local_pos.pose.position.x, current_local_pos.pose.position.y, 
-                 current_local_pos.pose.position.z);
+                set_pos_sp(pose_c, x_curr, y_curr, 2.0);
             	main_state = ST_RED;
 
             }
 
-            if (red_target_pos.header.frame_id == "blackTargetDetected" && red_flag == 1)
+            if (black_target_pos.header.frame_id == "blackTargetDetected" && red_flag == 1)
             {
                 cout<<"Red target detected\n";
-                set_pos_sp(pose_c, current_local_pos.pose.position.x, current_local_pos.pose.position.y,
-                 current_local_pos.pose.position.z);
+                 set_pos_sp(pose_c, x_curr, y_curr, 2.0);
 
                 main_state = ST_BLACK;
 
@@ -323,8 +335,10 @@ void terpcopterMission::state_machine(void)
                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
                {    cout<<"Search2 state Reached \n";
+                        if (main_state != ST_RED && main_state != ST_BLACK)
+                            main_state = ST_SEARCH3;
 
-                    	main_state = ST_SEARCH3;
+                        
                     
                }
         }
@@ -343,28 +357,28 @@ void terpcopterMission::state_machine(void)
             set_yaw_sp(pose_c, pose_array[7][3]);
             local_pos_sp_pub.publish(pose_c);
             
-            ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
-            current_local_pos.pose.position.y, current_local_pos.pose.position.z);
+            // ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
+            // current_local_pos.pose.position.y, current_local_pos.pose.position.z);
             
-            ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
-            abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
-            abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
+            // ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
+            // abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
+            // abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
             
+             x_curr = current_local_pos.pose.position.x;
+             y_curr = current_local_pos.pose.position.y;
 
-            if (red_target_pos.header.frame_id == "redTargetDetected")
+            if (red_target_pos.header.frame_id == "redTargetDetected" && red_flag!= 1)
             {
             	cout<<"Red target detected\n";
-                set_pos_sp(pose_c, current_local_pos.pose.position.x, current_local_pos.pose.position.y,
-                 current_local_pos.pose.position.z);
+                set_pos_sp(pose_c, x_curr, y_curr, 2.0);
             	main_state = ST_RED;
 
             }
 
-            if (red_target_pos.header.frame_id == "blackTargetDetected" && red_flag == 1)
+            if (black_target_pos.header.frame_id == "blackTargetDetected" && red_flag == 1)
             {
                 cout<<"Red target detected\n";
-                set_pos_sp(pose_c, current_local_pos.pose.position.x, current_local_pos.pose.position.y,
-                 current_local_pos.pose.position.z);
+                 set_pos_sp(pose_c, x_curr, y_curr, 2.0);
 
                 main_state = ST_BLACK;
 
@@ -375,8 +389,10 @@ void terpcopterMission::state_machine(void)
                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
                {    cout<<"Search3 state Reached \n";
+                    if (main_state != ST_RED && main_state != ST_BLACK)
+                        main_state = ST_SEARCH4;
 
-                    main_state = ST_SEARCH4;
+                    
 
                }
         }
@@ -395,27 +411,28 @@ void terpcopterMission::state_machine(void)
             set_yaw_sp(pose_c, pose_array[8][3]);
             local_pos_sp_pub.publish(pose_c);
             
-            ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
-            current_local_pos.pose.position.y, current_local_pos.pose.position.z);
+            // ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
+            // current_local_pos.pose.position.y, current_local_pos.pose.position.z);
             
-            ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
-            abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
-            abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
+            // ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
+            // abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
+            // abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
             
-           if (red_target_pos.header.frame_id == "redTargetDetected")
+             x_curr = current_local_pos.pose.position.x;
+             y_curr = current_local_pos.pose.position.y;
+
+            if (red_target_pos.header.frame_id == "redTargetDetected" && red_flag!= 1)
             {
-            	cout<<"Red target detected\n";
-                set_pos_sp(pose_c, current_local_pos.pose.position.x, current_local_pos.pose.position.y,
-                 current_local_pos.pose.position.z);
-            	main_state = ST_RED;
+                cout<<"Red target detected\n";
+                set_pos_sp(pose_c, x_curr, y_curr, 2.0);
+                main_state = ST_RED;
 
             }
 
-            if (red_target_pos.header.frame_id == "blackTargetDetected" && red_flag == 1)
+            if (black_target_pos.header.frame_id == "blackTargetDetected" && red_flag == 1)
             {
-                cout<<"Red target detected\n";
-                set_pos_sp(pose_c, current_local_pos.pose.position.x, current_local_pos.pose.position.y,
-                 current_local_pos.pose.position.z);
+                cout<<"Black target detected\n";
+                set_pos_sp(pose_c, x_curr, y_curr, 2.0);
 
                 main_state = ST_BLACK;
 
@@ -426,7 +443,10 @@ void terpcopterMission::state_machine(void)
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
                {    
                     cout<<"Search4 state Reached \n";
-                    main_state = ST_SEARCH1; // if no target found go back to search 1
+                    if (main_state != ST_RED && main_state != ST_BLACK)
+                        main_state = ST_SEARCH1; // if no target found go back to search 1
+
+                    
                     
                }
         }
@@ -535,19 +555,19 @@ void terpcopterMission::state_machine(void)
             set_yaw_sp(pose_c, pose_array[9][3]);
             local_pos_sp_pub.publish(pose_c);
             
-            ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
-            current_local_pos.pose.position.y, current_local_pos.pose.position.z);
+            // ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
+            // current_local_pos.pose.position.y, current_local_pos.pose.position.z);
             
-            ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
-            abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
-            abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
+            // ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
+            // abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
+            // abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
             
             if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
                {    
                     cout<<"Back1 Checked \n";
-                    main_state = ST_OBSTACLE2;
+                    main_state = ST_MOVE1;
                     
                }
 
@@ -665,26 +685,47 @@ void terpcopterMission::state_machine(void)
 
         case ST_LAND:
         {
-            if(current_state.mode == "OFFBOARD"){
-                // used same logic given in sample code for offboard mode
-                if(current_state.mode != "AUTO.LAND" &&
-                (ros::Time::now() - landing_last_request > ros::Duration(5.0))){
-                if(land_client.call(landing_cmd) &&
-                    landing_cmd.response.success){
-                    ROS_INFO("AUTO LANDING!");
-                }
-                landing_last_request = ros::Time::now();
-                }
-            }
+            // if(current_state.mode == "OFFBOARD"){
+            //     // used same logic given in sample code for offboard mode
+            //     if(current_state.mode != "AUTO.LAND" &&
+            //     (ros::Time::now() - landing_last_request > ros::Duration(5.0))){
+            //     if(land_client.call(landing_cmd) &&
+            //         landing_cmd.response.success){
+            //         ROS_INFO("AUTO LANDING!");
+            //     }
+            //     landing_last_request = ros::Time::now();
+            //     }
+            // }
 
             if(red_flag == 1){ // if this does not work wait for 30s 
                 ROS_INFO("Red target landed going to search1");
-                main_state= ST_SEARCH1;
+                x_curr = pose_r.pose.position.x;
+                y_curr = pose_r.pose.position.y;
+                set_pos_sp(pose_c, x_curr, y_curr, 0.0);
+                local_pos_sp_pub.publish(pose_c);
+                
+                if(current_local_pos.pose.position.z < 0.1)
+                    {   
+                        for (int i = 0; i<500; i++)
+                        {}
+
+                        cout<<"State has been made SEARCH1 \n";
+                        main_state= ST_SEARCH1;
+                }
             }
 
             if (black_flag == 1){
-                ROS_INFO("Black target landed going to back1");
-                main_state= ST_BACK1;
+                ROS_INFO("Black target landing");
+                x_curr = pose_b.pose.position.x;
+                y_curr = pose_b.pose.position.y;
+                set_pos_sp(pose_c, x_curr, y_curr, 0.0);
+                local_pos_sp_pub.publish(pose_c);
+                
+                if(current_local_pos.pose.position.z < 0.1)
+                    {   
+                    cout<<"State has been made BACK1 \n";
+                    main_state= ST_BACK1;
+                }
             }
         }
             break;
