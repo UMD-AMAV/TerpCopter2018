@@ -1,0 +1,5 @@
+<launch>
+
+  <node name="terpcopter_vision_home" pkg="terpcopter_vision" type="terpcopter_homebase.py" output="screen" />
+  
+</launch>

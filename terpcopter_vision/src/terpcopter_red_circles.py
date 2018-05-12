@@ -22,7 +22,7 @@ class image_converter:
     self.redtarget_pos = rospy.Publisher("/redTargetPose", PoseStamped, queue_size=10 )
 
     self.bridge = CvBridge()
-    self.image_sub = rospy.Subscriber("/iris/camera_red_iris/image_raw",Image,self.callback)
+    self.image_sub = rospy.Subscriber("/terpcopter/cameras/forward/image",Image,self.callback)
     
   def callback(self,ros_data):
     try:
@@ -158,7 +158,7 @@ class image_converter:
               cv2.line(cv_image, p1, p2, (255,0,0), 2)
     
     
-    cv2.imshow("Image window", cv_image)
+    #cv2.imshow("Image window", cv_image)
     # cv2.imshow("Mask", mask)
     cv2.waitKey(3)
 

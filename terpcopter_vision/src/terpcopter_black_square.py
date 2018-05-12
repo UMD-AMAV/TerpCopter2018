@@ -25,7 +25,7 @@ class image_converter:
     
 
     self.bridge = CvBridge()
-    self.image_sub = rospy.Subscriber("/iris/camera_red_iris/image_raw",Image,self.callback)
+    self.image_sub = rospy.Subscriber("/terpcopter/cameras/forward/image",Image,self.callback)
 
   def callback(self,ros_data):
     try:
@@ -151,7 +151,7 @@ class image_converter:
         
     
     
-    cv2.imshow("Image window", cv_image)
+    #cv2.imshow("Image window", cv_image)
     #cv2.imshow("Mask", mask)
     #cv2.imshow("Res", res)
     #cv2.imshow("Mask", mask)

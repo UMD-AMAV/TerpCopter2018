@@ -1,0 +1,5 @@
+<launch>
+
+  <node name="terpcopter_vision_red" pkg="terpcopter_vision" type="terpcopter_red_circles.py" output="screen" />
+  
+</launch>

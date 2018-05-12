@@ -24,12 +24,15 @@ class image_converter:
     #self.centroid_pub = rospy.Publisher('/HomebaseCentroid', Twist, queue_size=10)
     
     self.bridge = CvBridge()
-    self.image_sub = rospy.Subscriber("/iris/camera_red_iris/image_raw",Image,self.callback)
+    self.image_sub = rospy.Subscriber("/terpcopter/cameras/forward/image",Image,self.callback)
 
   def callback(self,data):
     try:
-        lower = np.array([180, 165, 180], dtype = "uint8")
+        lower = np.array([180, 165, 180], dtype = "uint8") #To isolate overall pattern from surroundings
         upper = np.array([255, 255, 255], dtype = "uint8")
+
+        lowerH = np.array([0,0,0]) #for detecting the black H inside the circle
+        upperH = np.array([180, 255, 50])
         cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
 
         msg = PoseStamped()
@@ -140,7 +143,7 @@ class image_converter:
                         1.0, (0, 255, 0), 3)
                   
                     msg.header.stamp= rospy.Time.now()
-                    msg.header.frame_id = "redTargetDetected"
+                    msg.header.frame_id = "homeTargetDetected"
                     msg.pose.position.x=x_pos
                     msg.pose.position.y=y_pos
                     msg.pose.position.z=z_pos
@@ -163,7 +166,7 @@ class image_converter:
                 #Draw Contours
                 #cv2.drawContours(ROI, cnts, -1, (0,0,255), 3)
                 
-        cv2.imshow('Images',np.hstack([cv_image, maskedImage]))
+        #cv2.imshow('Images',np.hstack([cv_image, maskedImage]))
         #cv2.imshow('Masked Binary ROI',maskedROIBin)
         cv2.waitKey(3)
 
