@@ -55,8 +55,8 @@ class image_converter:
 
         # Camera internals
     camera_matrix = np.array(
-                          [[476.70308, 0, 400.5],
-                          [0,476.70308, 400.5],
+                          [[1133.20525, 0, 1031.16667],
+                          [0,1136.61974, 476.39564],
                           [0, 0, 1]], dtype = "double"
                             )
                           
