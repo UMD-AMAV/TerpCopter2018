@@ -152,48 +152,48 @@ void terpcopterMission::state_machine(void)
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
                {    
                     cout<<"MOVE1 Checked \n";
-                    main_state = ST_BOXMOVE;
+                    main_state = ST_OBSTACLE;
                     
                }
         }
             break;
 
-        // case ST_OBSTACLE: // has to be changed to accommodate the Terraranger 
-        // {
-        //     ROS_DEBUG_ONCE("Obstacle");
-        //     //cout<<"In Move1\n";    
-        //     state.data = "OBSTACLE2";
-        //     state_pub.publish(state);
-        //     cout<<"Published Obstacle2 \n";
+        case ST_OBSTACLE: // has to be changed to accommodate the Terraranger 
+        {
+            ROS_DEBUG_ONCE("Obstacle");
+            //cout<<"In Move1\n";    
+            state.data = "OBSTACLE2";
+            state_pub.publish(state);
+            cout<<"Published Obstacle2 \n";
 
-        //     while (obstacle_range.range < 1.3){
+            while (obstacle_range.range < 1.3){
 
-        //         ROS_INFO("obstacle detected");
+                ROS_INFO("obstacle detected");
                 
-        //         set_pos_sp(pose_c, current_local_pos.pose.position.x + increment, current_local_pos.pose.position.y,
-        //          current_local_pos.pose.position.z); //moves to the left
+                set_pos_sp(pose_c, current_local_pos.pose.position.x + increment, current_local_pos.pose.position.y,
+                 current_local_pos.pose.position.z); //moves to the left
                 
-        //         local_pos_sp_pub.publish(pose_c);
-        //         cout<<"Published set points to avoid obstacle while going forward. \n";
+                local_pos_sp_pub.publish(pose_c);
+                cout<<"Published set points to avoid obstacle while going forward. \n";
                
-        //        if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
-        //         (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
-        //         (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1)) {    
+               if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
+                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
+                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1)) {    
     
-        //             continue;    
-        //        }
+                    continue;    
+               }
 
-        //     }
+            }
 
-        //     if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
-        //         (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
-        //         (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1)) {    
+            if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
+                (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
+                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1)) {    
                     
-        //             main_state = ST_BOXMOVE;
+                    main_state = ST_BOXMOVE;
                     
-        //        }
-        // }
-        // 	break;
+               }
+        }
+        	break;
         
         case ST_BOXMOVE:
         {
@@ -567,7 +567,7 @@ void terpcopterMission::state_machine(void)
                (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
                {    
                     cout<<"Back1 Checked \n";
-                    main_state = ST_MOVE1;
+                    main_state = ST_OBSTACLE2;
                     
                }
 
