@@ -40,3 +40,8 @@
 /mavlink
 .rosinstall
 .rosinstall.bak
+
+# Matlab extras
+*.mat
+*.txt
+
