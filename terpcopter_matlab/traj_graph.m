@@ -1,4 +1,3 @@
-
 % 
 % THIS FILE SUBSCRIBES GRAPHS THE TRAJECTORIES OF POSITION X,Y,Z
 % and plots them on the arena 
@@ -17,14 +16,14 @@
 % CONTAINED HERE IN CONSIDERATION OF YOUR ACCEPTANCE OF SUCH TERMS AND
 % CONDITIONS.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % rosinit('10.1.10.204'); % only the first time, where IP is ROS MASTER
+% posX and posY are w/r to pixhawks (local) 
+% posX_arena w/r to arena 
 
 function traj_graph
 
-<<<<<<< HEAD
 % create our clean up object
-=======
->>>>>>> f1739929c770c50a86614e29f35c98aed789026c
 cleanupObj = onCleanup(@cleanMeUp);
 
 disp(' ')
@@ -41,19 +40,9 @@ arena = [0 75 0 35]*0.3048; % m
 home = [10,10]*0.3048; % m
 launch_position = home; % initial position for flight in arena coords
 
-set(gcf,'CurrentCharacter','@');
 try
     msgPose = receive(pose,10);
-<<<<<<< HEAD
     yaw_offset = 0; % orientation of arena +x axis (deg CCW from E)
-=======
-        % define offsets relative to initial pose
-    %quat=([msgPose.Pose.Orientation.W,msgPose.Pose.Orientation.X,...
-    %        msgPose.Pose.Orientation.Y,msgPose.Pose.Orientation.Z]);
-    %Eangles = rad2deg(quat2eul(quat));
-    %yaw_offset = Eangles(1);
-    yaw_offset = -18; % orientation of arena +x axis (deg CCW from E)
->>>>>>> f1739929c770c50a86614e29f35c98aed789026c
     x_offset = msgPose.Pose.Position.X;
     y_offset = msgPose.Pose.Position.Y;
 catch e
@@ -134,11 +123,14 @@ while (1)
     quality(ii) = msgflow.Quality;
     
     % Transformation of X,Y points to arena frame   
-    posX_arena(ii) = (posX(ii)-x_offset) * cos(deg2rad(yaw_offset)) - ...
-        (posY(ii)-y_offset) * sin(deg2rad(yaw_offset))+launch_position(1);
-    posY_arena(ii) = (posX(ii)-x_offset) * sin(deg2rad(yaw_offset)) + ...
-        (posY(ii)-y_offset) * cos(deg2rad(yaw_offset))+launch_position(2);
-    
+%     posX_arena(ii) = (posX(ii)-x_offset) * cos(deg2rad(yaw_offset)) - ...
+%         (posY(ii)-y_offset) * sin(deg2rad(yaw_offset))+launch_position(1);
+%     posY_arena(ii) = (posX(ii)-x_offset) * sin(deg2rad(yaw_offset)) + ...
+%         (posY(ii)-y_offset) * cos(deg2rad(yaw_offset))+launch_position(2);
+
+    [posX_arena, posY_arena] = local_to_arena(posX, posY, yaw_offset, ...
+                             x_offset, y_offset, launch_position);
+                         
     quat=([msgPose.Pose.Orientation.W, msgPose.Pose.Orientation.X,...
         msgPose.Pose.Orientation.Y,msgPose.Pose.Orientation.Z]);
     Eangles = rad2deg(quat2eul(quat));
@@ -153,10 +145,10 @@ while (1)
     t = abs_t-t0;
     
     subplot(6,2,7);
-    plot(t,posX_arena(ii),'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
+    plot(t,posX_arena,'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
     
     subplot(6,2,9);
-    plot(t,posY_arena(ii),'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
+    plot(t,posY_arena,'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
     
     subplot(6,2,11);
     plot(t,posZ(ii),'b.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
@@ -207,7 +199,6 @@ catch e
 %save
 rethrow(e)
 end
-<<<<<<< HEAD
 
 function cleanMeUp()
         % saves data to file (or could save to workspace)
@@ -246,19 +237,6 @@ function [posX_arena, posY_arena]= local_to_arena(posX, posY, ...
 end
 
 end
-=======
 
->>>>>>> f1739929c770c50a86614e29f35c98aed789026c
 
-function cleanMeUp()
 
-       % saves data to file (or could save to workspace)
-
-       fprintf('saving variables to file...\n');
-
-       filename = ['traj_graph' datestr(now,'yyyy-mm-dd_HHMMSS') '.mat'];
-
-       save(filename);
-
-end
-end
