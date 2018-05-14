@@ -20,7 +20,7 @@
 % mavros/setpoint_position/local; % mavros topic used to publish waypoints
 function Waypoints_pub_demo
 
-terpcopter_states = string(["INIT","TAKEOFF", "MOVE1"]);%, "OBSTACLE", "SEARCHBOX", "SEARCH",...
+terpcopter_states = string(["INIT","TAKEOFF", "MOVE1", "LAND"]);%, "OBSTACLE", "SEARCHBOX", "SEARCH",...
 %"RED", "BLACK" , "RETURN1", "HOME"]);
 
 [~,stateSize] = size(terpcopter_states);
@@ -69,8 +69,7 @@ end
 
 msgWaypoint = rosmessage(waypointPub);
 
-for kk=1:stateSize
-    
+for kk=1:stateSize-1
     msgWaypoint.Poses(kk)= robotics.ros.msggen.geometry_msgs.Pose;
 end
 
@@ -94,7 +93,7 @@ end
 disp('Sending the following...')
 local_Waypoints
         
-for ii=1:stateSize
+for ii=1:stateSize-1
     msgWaypoint.Poses(ii).Position.X = local_Waypoints(ii,1);
     msgWaypoint.Poses(ii).Position.Y = local_Waypoints(ii,2);
     msgWaypoint.Poses(ii).Position.Z = local_Waypoints(ii,3);
@@ -146,6 +145,14 @@ while (1)
    
    if(msgState.Data == terpcopter_states(3))
        fprintf('MOVE1 \n')
+       
+       fprintf(fileID,'%s \n',msgState.Data);
+       fprintf(fileID,'X: %f, Y: %f, Z: %f \n',msgPose.Pose.Position.X,...
+           msgPose.Pose.Position.Y,msgPose.Pose.Position.Z);
+   end
+   
+   if(msgState.Data == terpcopter_states(4))
+       fprintf('LAND \n')
        
        fprintf(fileID,'%s \n',msgState.Data);
        fprintf(fileID,'X: %f, Y: %f, Z: %f \n',msgPose.Pose.Position.X,...
