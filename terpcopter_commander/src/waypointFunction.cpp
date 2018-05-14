@@ -72,7 +72,7 @@ void terpcopterMission::state_machine(void)
             state.data = "INIT";
             state_pub.publish(state);
 
-            set_pos_sp(pose_c, pose_array[0][0], pose_array[0][1], pose_array[0][2]);
+            set_pos_sp(pose_c, current_local_pos.pose.position.x, current_local_pos.pose.position.y, current_local_pos.pose.position.z);
             set_yaw_sp(pose_c, pose_array[0][3]);
             local_pos_sp_pub.publish(pose_c);
 
@@ -91,8 +91,10 @@ void terpcopterMission::state_machine(void)
             state.data = "TAKEOFF";
             state_pub.publish(state);
 
-            set_pos_sp(pose_c, pose_array[1][0], pose_array[1][1], pose_array[1][2]);
+            //set_pos_sp(pose_c, pose_array[1][0], pose_array[1][1], pose_array[1][2]);
+            pose_c.pose.position.z = pose_array[1][2];
             set_yaw_sp(pose_c, pose_array[1][3]);
+            
             local_pos_sp_pub.publish(pose_c);
             
             ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
@@ -102,10 +104,9 @@ void terpcopterMission::state_machine(void)
             abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
             abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
 
-            if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
-               (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
-               (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
-               {    cout<<"Takeoff Checked \n";
+            if((abs(current_local_pos.pose.position.z - pose_c.pose.position.z) > 1))
+               {    
+                    cout<<"Takeoff Checked \n";
                     main_state = ST_MOVE1; // get digital number from display
                     
                }
@@ -131,9 +132,9 @@ void terpcopterMission::state_machine(void)
             abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
             abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
             
-            if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 0.1) &&
-               (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 0.1) &&
-               (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.1))
+            if((abs(current_local_pos.pose.position.x - pose_c.pose.position.x) < 1) &&
+               (abs(current_local_pos.pose.position.y - pose_c.pose.position.y) < 1) &&
+               (abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.5))
                {    cout<<"MOVE1 Checked \n";
                     main_state = ST_LAND;
                     
@@ -208,16 +209,40 @@ void terpcopterMission::state_machine(void)
 
         case ST_LAND:
         {
+            state.data = "LAND";
+            state_pub.publish(state);
+            
+//             if(current_state.mode == "OFFBOARD"){
+//                 // used same logic given in sample code for offboard mode
+//                 if(current_state.mode != "AUTO.LAND" &&
+//                 (ros::Time::now() - landing_last_request > ros::Duration(5.0))){
+//                 if(land_client.call(landing_cmd) &&
+//                     landing_cmd.response.success){
+//                     ROS_INFO("AUTO LANDING!");
+//                 }
+//                 landing_last_request = ros::Time::now();
+//                 }
+//             }
+            
             if(current_state.mode == "OFFBOARD"){
-                // used same logic given in sample code for offboard mode
-                if(current_state.mode != "AUTO.LAND" &&
-                (ros::Time::now() - landing_last_request > ros::Duration(5.0))){
-                if(land_client.call(landing_cmd) &&
-                    landing_cmd.response.success){
-                    ROS_INFO("AUTO LANDING!");
+                pose_c.pose.position.z = 0;
+                set_yaw_sp(pose_c, pose_array[2][2]);
+            
+                local_pos_sp_pub.publish(pose_c);
+            
+                ROS_INFO("local pose-> X: [%f], Y: [%f], Z: [%f]",current_local_pos.pose.position.x,
+                current_local_pos.pose.position.y, current_local_pos.pose.position.z);
+            
+                ROS_INFO("Difference Pose-> X: [%f], Y: [%f], Z: [%f]",abs(current_local_pos.pose.position.x - pose_c.pose.position.x),
+                abs(current_local_pos.pose.position.y - pose_c.pose.position.y),
+                abs(current_local_pos.pose.position.z - pose_c.pose.position.z));
+
+                if((abs(current_local_pos.pose.position.z - pose_c.pose.position.z) < 0.3))
+                {    
+                    cout<<"LAND Checked \n";
                 }
-                landing_last_request = ros::Time::now();
-                }
+                
+                
             }
         }
             break;
