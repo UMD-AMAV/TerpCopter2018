@@ -23,12 +23,16 @@
 
 function traj_graph
 
+% create our clean up object
+cleanupObj = onCleanup(@cleanMeUp);
+
 disp(' ')
 disp('Welcome to Traj Graph!')
 disp('Press q to quit')
 disp(' ')
 
 pose = rossubscriber('/mavros/local_position/pose');
+flow = rossubscriber('/mavros/px4flow/raw/optical_flow_rad');
 
 ax = 5; % m
 tlag = 10; % sec
@@ -38,7 +42,7 @@ launch_position = home; % initial position for flight in arena coords
 
 try
     msgPose = receive(pose,10);
-    yaw_offset = 6; % orientation of arena +x axis (deg CCW from E)
+    yaw_offset = 0; % orientation of arena +x axis (deg CCW from E)
     x_offset = msgPose.Pose.Position.X;
     y_offset = msgPose.Pose.Position.Y;
 catch e
@@ -105,6 +109,7 @@ try
 while (1) 
     try
         msgPose = receive(pose,10);
+        msgflow = receive(flow,10);
     catch e
         fprintf(1,'The identifier was:\n%s',e.identifier);
         fprintf(1,'There was an error! The message was:\n%s',e.message);
@@ -114,6 +119,8 @@ while (1)
     posX(ii) = msgPose.Pose.Position.X;
     posY(ii) = msgPose.Pose.Position.Y;
     posZ(ii) = msgPose.Pose.Position.Z;
+    
+    quality(ii) = msgflow.Quality;
     
     % Transformation of X,Y points to arena frame   
 %     posX_arena(ii) = (posX(ii)-x_offset) * cos(deg2rad(yaw_offset)) - ...
@@ -172,8 +179,8 @@ while (1)
     set(pos_plot2,'xdata',posX_arena(ii),'ydata',posY_arena(ii));
     set(yaw_quiver2,'xdata',posX_arena(ii),'ydata',posY_arena(ii),'udata', ...
         cos(yaw_arena(ii)/180*pi), 'vdata',sin(yaw_arena(ii)/180*pi));
-    set(htext_arena,'string',['(t,x,y,yaw)=(' num2str(t,4) ',' num2str(posX_arena(ii),3) ',' num2str(posY_arena(ii),3) ...
-        ',' num2str(yaw_arena(ii)) ')'])
+    set(htext_arena,'string',['(t,x,y,yaw,quality)=(' num2str(t,4) ',' num2str(posX_arena(ii),3) ',' num2str(posY_arena(ii),3) ...
+        ',' num2str(yaw_arena(ii)) ',' num2str(quality(ii)) ')'])
 
     % check for keys
     k=get(gcf,'CurrentCharacter');
@@ -187,22 +194,48 @@ while (1)
     drawnow
     ii=ii+1;
 end
-save
+%save
 catch e
-save
+%save
 rethrow(e)
 end
+
+function cleanMeUp()
+        % saves data to file (or could save to workspace)
+        fprintf('saving variables to file...\n');
+        filename = ['traj_graph' datestr(now,'yyyy-mm-dd_HHMMSS') '.mat'];
+        save(filename);
 end
 
-% pixhawk to arena
+
+% local to arena
+
+% function [posX_arena, posY_arena]= local_to_arena(posX, posY, ...
+%             yaw_offset, x_offset, y_offset, launch_position)
+%             
+%       r_Do_o = [launch_position(1); launch_position(2)]; % launch position 
+%       
+%       R_A_L = [sin(deg2rad(yaw_offset)) cos(deg2rad(yaw_offset))    % rotation of local to arena
+%                 cos(deg2rad(yaw_offset)) -sin(deg2rad(yaw_offset))];
+%             
+%       r_p_Do = [posX - x_offset; 
+%                 posY - y_offset];
+%             
+%       arena_pos = r_Do_o + R_A_L * r_p_Do;
+%       
+%       posX_arena = arena_pos(1);
+%       posY_arena = arena_pos(2);
+% end
 function [posX_arena, posY_arena]= local_to_arena(posX, posY, ...
             yaw_offset, x_offset, y_offset, launch_position)
         
-    posX_arena = (posX - x_offset) * cos(deg2rad(yaw_offset)) - ...
-        (posY - y_offset) * sin(deg2rad(yaw_offset)) + launch_position(1);
+    posX_arena = (posX - x_offset) * sin(deg2rad(yaw_offset)) + ...
+        (posY - y_offset) * cos(deg2rad(yaw_offset)) + launch_position(1);
     
-    posY_arena = (posX - x_offset) * sin(deg2rad(yaw_offset)) + ...
-        (posY - y_offset) * cos(deg2rad(yaw_offset)) + launch_position(2); 
+    posY_arena = (posX - x_offset) * cos(deg2rad(yaw_offset)) - ...
+        (posY - y_offset) * sin(deg2rad(yaw_offset)) + launch_position(2); 
+end
+
 end
 
 
