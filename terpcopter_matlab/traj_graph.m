@@ -32,8 +32,15 @@ disp('Press q to quit')
 disp(' ')
 
 pose = rossubscriber('/mavros/local_position/pose');
-flow = rossubscriber('/mavros/px4flow/raw/optical_flow_rad');
 
+try
+    flow = rossubscriber('/mavros/px4flow/raw/optical_flow_rad');
+catch e
+    fprintf(1,'The identifier was:\n%s',e.identifier);
+    fprintf(1,'There was an error! The message was:\n%s',e.message);
+    flow = [];
+end
+    
 ax = 5; % m
 tlag = 10; % sec
 arena = [0 75 0 35]*0.3048; % m
@@ -109,7 +116,7 @@ try
 while (1) 
     try
         msgPose = receive(pose,10);
-        msgflow = receive(flow,10);
+        if ~isempty(flow), msgflow = receive(flow,10); end
     catch e
         fprintf(1,'The identifier was:\n%s',e.identifier);
         fprintf(1,'There was an error! The message was:\n%s',e.message);
@@ -120,7 +127,9 @@ while (1)
     posY(ii) = msgPose.Pose.Position.Y;
     posZ(ii) = msgPose.Pose.Position.Z;
     
-    quality(ii) = msgflow.Quality;
+
+    if ~isempty(flow), quality(ii) = msgflow.Quality;
+    else, quality(ii) = nan; end
     
     % Transformation of X,Y points to arena frame   
 %     posX_arena(ii) = (posX(ii)-x_offset) * cos(deg2rad(yaw_offset)) - ...
@@ -128,7 +137,7 @@ while (1)
 %     posY_arena(ii) = (posX(ii)-x_offset) * sin(deg2rad(yaw_offset)) + ...
 %         (posY(ii)-y_offset) * cos(deg2rad(yaw_offset))+launch_position(2);
 
-    [posX_arena, posY_arena] = local_to_arena(posX, posY, yaw_offset, ...
+    [posX_arena(ii), posY_arena(ii)] = local_to_arena(posX(ii), posY(ii), yaw_offset, ...
                              x_offset, y_offset, launch_position);
                          
     quat=([msgPose.Pose.Orientation.W, msgPose.Pose.Orientation.X,...
@@ -145,10 +154,10 @@ while (1)
     t = abs_t-t0;
     
     subplot(6,2,7);
-    plot(t,posX_arena,'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
+    plot(t,posX_arena(ii),'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
     
     subplot(6,2,9);
-    plot(t,posY_arena,'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
+    plot(t,posY_arena(ii),'r.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
     
     subplot(6,2,11);
     plot(t,posZ(ii),'b.'); set(gca,'xlim',[max(t-tlag,0) max(t,1)])
@@ -215,8 +224,8 @@ end
 %             
 %       r_Do_o = [launch_position(1); launch_position(2)]; % launch position 
 %       
-%       R_A_L = [sin(deg2rad(yaw_offset)) cos(deg2rad(yaw_offset))    % rotation of local to arena
-%                 cos(deg2rad(yaw_offset)) -sin(deg2rad(yaw_offset))];
+%       R_A2L = [cos(deg2rad(yaw_offset)) -sin(deg2rad(yaw_offset))    % rotation of local to arena
+%                 cos(deg2rad(yaw_offset)) sin(deg2rad(yaw_offset))];
 %             
 %       r_p_Do = [posX - x_offset; 
 %                 posY - y_offset];
@@ -229,11 +238,11 @@ end
 function [posX_arena, posY_arena]= local_to_arena(posX, posY, ...
             yaw_offset, x_offset, y_offset, launch_position)
         
-    posX_arena = (posX - x_offset) * sin(deg2rad(yaw_offset)) + ...
-        (posY - y_offset) * cos(deg2rad(yaw_offset)) + launch_position(1);
+    posX_arena = (posX - x_offset) * cos(deg2rad(yaw_offset)) - ...
+        (posY - y_offset) * sin(deg2rad(yaw_offset)) + launch_position(1);
     
-    posY_arena = (posX - x_offset) * cos(deg2rad(yaw_offset)) - ...
-        (posY - y_offset) * sin(deg2rad(yaw_offset)) + launch_position(2); 
+    posY_arena = (posX - x_offset) * sin(deg2rad(yaw_offset)) + ...
+        (posY - y_offset) * cos(deg2rad(yaw_offset)) + launch_position(2); 
 end
 
 end

@@ -4,8 +4,8 @@ function [posX_pixhawk, posY_pixhawk] = arena_to_local(posX_arena, posY_arena, .
         
       r_Do_o = [launch_position(1); launch_position(2)]; % launch position 
       
-      R_L_A = [sin(yaw_offset) cos(yaw_offset)    % rotation of local to arena
-                cos(yaw_offset) -sin(yaw_offset)];
+      R_L_A = [cos(yaw_offset) -sin(yaw_offset)    % rotation of local to arena
+                sin(yaw_offset) cos(yaw_offset)];
             
       r_p_o = [posX_arena; 
                 posY_arena];

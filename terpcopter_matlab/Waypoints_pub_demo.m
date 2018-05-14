@@ -32,7 +32,7 @@ launch_position = home; % initial position for flight in arena coords
 %X(m) Y(m) Z(m) YAW(deg) W/r to (0,0) I frame of arena
 arena_Waypoints = [launch_position(1) launch_position(2) 0 0;
                    launch_position(1) launch_position(2) 1.5 0; 
-                   launch_position(1)+1 launch_position(2) 1.5 0];
+                   launch_position(1)+4 launch_position(2) 1.5 0];
 
 %%
 disp(' ')
@@ -91,8 +91,9 @@ for ii = 1 : length
     local_Waypoints(ii,4)= yaw_pixhawk;
 end
 
+disp('Sending the following...')
 local_Waypoints
-           
+        
 for ii=1:stateSize
     msgWaypoint.Poses(ii).Position.X = local_Waypoints(ii,1);
     msgWaypoint.Poses(ii).Position.Y = local_Waypoints(ii,2);
