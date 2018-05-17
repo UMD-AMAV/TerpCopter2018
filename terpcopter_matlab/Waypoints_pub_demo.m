@@ -31,8 +31,8 @@ launch_position = home; % initial position for flight in arena coords
 % INSERT WAYPOINTS HERE 
 %X(m) Y(m) Z(m) YAW(deg) W/r to (0,0) I frame of arena
 arena_Waypoints = [launch_position(1) launch_position(2) 0 0;
-                   launch_position(1) launch_position(2) 1.5 0; 
-                   launch_position(1)+4 launch_position(2) 1.5 0];
+                   launch_position(1) launch_position(2) 2 0; 
+                   launch_position(1)+4 launch_position(2)+2 2 0];
 
 %%
 disp(' ')
