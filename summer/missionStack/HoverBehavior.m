@@ -1,7 +1,4 @@
-%This is the General format for the creating a behavior. A handle should be
-%made for each behavior.
-
-classdef behavior < handle
+classdef HoverBehavior < handle
     properties
         behaviorName
         %Throttle
@@ -17,11 +14,16 @@ classdef behavior < handle
         K_v
         v_d                     %desired
         
+        %altitude limit for hover behavior
+        z_hover
+        
+        %time limit for hovering
+        t_hover
         
     end
     
     methods
-        function node = behavior(behaviorName, K_height, height_d, K_yaw, yaw_d, K_u, u_d, K_v, v_d)
+        function node = HoverBehavior(behaviorName, K_height, height_d, K_yaw, yaw_d, K_u, u_d, K_v, v_d, z_hover, t_hover)
             if (nargin > 0)
                 node.behaviorName = behaviorName;
                 node.K_height = K_height;
@@ -32,8 +34,9 @@ classdef behavior < handle
                 node.u_d = u_d;
                 node.K_v = K_v;
                 node.v_d = v_d;
+                node.z_hover = z_hover;
+                node.t_hover = t_hover;
             end
         end
     end
 end
-

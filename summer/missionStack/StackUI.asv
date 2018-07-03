@@ -540,13 +540,6 @@ if behaviorState == 1
     
     % Places the Behavior Properties from GUI into the Behavior class
     SelectedBehavior = HoverBehavior(behaviorName, K_h, h_d, K_yaw, yaw_d, K_u, u_d, K_v, v_d, z_hover, t_hover);
-
-% Hold Station Behavior
-elseif behaviorState == 2
-    t_hold = str2num(get(handles.Condition1Edit, 'String'));
-    
-    % Places the Hold Station Behavior Properties from GUI into the Behavior class
-    SelectedBehavior = HoldStationBehavior(behaviorName, K_h, h_d, K_yaw, yaw_d, K_u, u_d, K_v, v_d, t_hold);
 end
 
 %Updates/Stores the Behavior Classes into the Mission Stack Cell Array 

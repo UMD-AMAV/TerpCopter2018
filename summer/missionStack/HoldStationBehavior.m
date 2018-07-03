@@ -1,7 +1,4 @@
-%This is the General format for the creating a behavior. A handle should be
-%made for each behavior.
-
-classdef behavior < handle
+classdef HoldStationBehavior < handle
     properties
         behaviorName
         %Throttle
@@ -17,11 +14,12 @@ classdef behavior < handle
         K_v
         v_d                     %desired
         
-        
+        %time to hold station
+        t_hold
     end
     
     methods
-        function node = behavior(behaviorName, K_height, height_d, K_yaw, yaw_d, K_u, u_d, K_v, v_d)
+        function node = HoldStationBehavior(behaviorName, K_height, height_d, K_yaw, yaw_d, K_u, u_d, K_v, v_d, t_hold)
             if (nargin > 0)
                 node.behaviorName = behaviorName;
                 node.K_height = K_height;
@@ -32,8 +30,8 @@ classdef behavior < handle
                 node.u_d = u_d;
                 node.K_v = K_v;
                 node.v_d = v_d;
+                node.t_hold = t_hold;
             end
         end
     end
 end
-
