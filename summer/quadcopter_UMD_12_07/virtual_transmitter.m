@@ -73,7 +73,7 @@ handles.sTrainerBox.BaudRate = params.baud_rate;
 handles.sTrainerBox.terminator = '';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Comment out for testing Behavior Manager
-fopen(handles.sTrainerBox);
+%fopen(handles.sTrainerBox);
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp( 'com port initialised');
@@ -195,24 +195,24 @@ send_stick_cmd(u_stick_cmd,trim,handles);
 %--------initialise ros------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Comment out for testing Behavior Manager without drone
-if(~robotics.ros.internal.Global.isNodeActive)
- rosinit(params.ros_master_ip); 
-end
-global imu_data lidarsub velocitysub t_c t_clock;
-imu_data = rossubscriber('/mavros/imu/data');
-lidarsub = rossubscriber('/terarangerone');
-velocitysub = rossubscriber('/mavros/local_position/velocity');
-%wait for subscriber to be able to receive messages
-pause(2);
-t_clock = clock;
-t_c = timer('ExecutionMode','fixedRate','TimerFcn',{@controller_fcn,handles,params},'Period',params.time_period);
-start(t_c);
+% if(~robotics.ros.internal.Global.isNodeActive)
+%  rosinit(params.ros_master_ip); 
+% end
+% global imu_data lidarsub velocitysub t_c t_clock;
+% imu_data = rossubscriber('/mavros/imu/data');
+% lidarsub = rossubscriber('/terarangerone');
+% velocitysub = rossubscriber('/mavros/local_position/velocity');
+% %wait for subscriber to be able to receive messages
+% pause(2);
+% t_clock = clock;
+% t_c = timer('ExecutionMode','fixedRate','TimerFcn',{@controller_fcn,handles,params},'Period',params.time_period);
+% start(t_c);
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% global t_c_behavior_manager;
-% t_c_behavior_manager = timer('ExecutionMode','fixedRate','TimerFcn',{@behavior_manager,handles});
-% start(t_c_behavior_manager);
+global t_c_behavior_manager;
+t_c_behavior_manager = timer('ExecutionMode','fixedRate','TimerFcn',{@behavior_manager,handles});
+start(t_c_behavior_manager);
 %------------------------------------
 
 %Choose default command line output for virtual_transmitter
@@ -834,16 +834,16 @@ fclose(fid);
 %clear global variables
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-global t_c;
-if(t_c.Running),stop(t_c);end
-delete(t_c);
-clear global t_c;
+% global t_c;
+% if(t_c.Running),stop(t_c);end
+% delete(t_c);
+% clear global t_c;
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% global t_c_behavior_manager
-% if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
-% delete(t_c_behavior_manager)
-% clear global t_c_behavior_manager
+global t_c_behavior_manager
+if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
+delete(t_c_behavior_manager)
+clear global t_c_behavior_manager
 clear global imu_data;
 clear global lidarsub;
 clear global velocitysub;
@@ -857,7 +857,7 @@ disp('BYE');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-rosshutdown;
+% rosshutdown;
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 delete(hObject);

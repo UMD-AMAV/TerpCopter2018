@@ -53,13 +53,13 @@ channel4Command = 5000- 4000*u_stick_net(4);  % yaw
    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-fprintf(handles.sTrainerBox,'a');
-fprintf(handles.sTrainerBox,int2str(channel1Command));
-fprintf(handles.sTrainerBox,int2str(channel2Command));
-fprintf(handles.sTrainerBox,int2str(channel3Command));
-fprintf(handles.sTrainerBox,int2str(channel4Command));
-fprintf(handles.sTrainerBox,'z');
-%%%%
+% fprintf(handles.sTrainerBox,'a');
+% fprintf(handles.sTrainerBox,int2str(channel1Command));
+% fprintf(handles.sTrainerBox,int2str(channel2Command));
+% fprintf(handles.sTrainerBox,int2str(channel3Command));
+% fprintf(handles.sTrainerBox,int2str(channel4Command));
+% fprintf(handles.sTrainerBox,'z');
+% %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %the above fprintf statements take 0.03 sec to execute
