@@ -46,14 +46,14 @@ mission.bhv{ind}.completion.status = false;
 mission.bhv{ind}.completion.threshold = 0.1;    % tolerance
 mission.bhv{ind}.blocking = false;
 %testing
-mission.bhv{ind}.completion.durationSec = 10;
+mission.bhv{ind}.completion.durationSec = 9.95;   % 10 seconds
 
 ind = ind+1;
 mission.bhv{ind}.name = 'bhv_hover';
 mission.bhv{ind}.type = 'mission';
 mission.bhv{ind}.params.desiredAltMeters = 3.0;
 mission.bhv{ind}.completion.type = 'time';
-mission.bhv{ind}.completion.durationSec = 20;
+mission.bhv{ind}.completion.durationSec = 19.95;    % 20 seconds
 mission.bhv{ind}.completion.status = false;
 mission.bhv{ind}.blocking = false;
 
@@ -62,7 +62,7 @@ mission.bhv{ind}.name = 'bhv_landinghover';
 mission.bhv{ind}.type = 'mission';
 mission.bhv{ind}.params.desiredAltMeters = 2.0;
 mission.bhv{ind}.completion.type = 'time';
-mission.bhv{ind}.completion.durationSec = 3;
+mission.bhv{ind}.completion.durationSec = 2.95;     % 3 seconds
 mission.bhv{ind}.completion.status = false;
 mission.bhv{ind}.blocking = false;
 
@@ -75,7 +75,7 @@ mission.bhv{ind}.completion.threshold = 0.1;
 mission.bhv{ind}.completion.status = false;
 mission.bhv{ind}.blocking = false;
 %testing
-mission.bhv{ind}.completion.durationSec = 3;
+mission.bhv{ind}.completion.durationSec = 4.95;     % 5 seconds
 
 
 

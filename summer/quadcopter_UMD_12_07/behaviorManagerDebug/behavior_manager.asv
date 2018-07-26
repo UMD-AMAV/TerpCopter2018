@@ -63,15 +63,12 @@ function behavior_manager(obj, event, handles)
                     
                     if current_behavior_elapsed_time >= missionStack{currentBehavior}.completion.durationSec
                         missionStack = pop(missionStack);
-                        set(handles.takeOff_radio,'Value', false)
+                        set(handles.tae
                     end
                 case 'bhv_hover'
                     disp('hover behavior');
-                    set(handles.altitude_control_radio,'Value', true)
-                    
                     if current_behavior_elapsed_time >= missionStack{currentBehavior}.completion.durationSec
                         missionStack = pop(missionStack);
-                        set(handles.altitude_control_radio,'Value', false)
                     end
                 case 'bhv_landinghover'
                     disp('hover landing behavior');
@@ -80,17 +77,9 @@ function behavior_manager(obj, event, handles)
                     end  
                 case 'bhv_land'
                     disp('land behavior');
-                    set(handles.land_radio,'Value', true)
-                    
                     if current_behavior_elapsed_time >= missionStack{currentBehavior}.completion.durationSec
                         missionStack = pop(missionStack);
-                        set(handles.land_radio,'Value', false)
-                        
-                        %stops timer
-                        global t_c_behavior_manager
-                        if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
-                        delete(t_c_behavior_manager)
-                        clear global t_c_behavior_manager
+                        return;
                     end    
         otherwise
             disp('error');
