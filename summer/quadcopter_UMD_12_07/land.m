@@ -25,11 +25,11 @@ function [u_stick_cmd,v_z_error_int_land] = land(state,handles,u_stick_cmd,param
 % CONDITIONS.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-persistent u_stick_thr_cur;
-if state.Z_cur <=params.landCompleteHeight 
+persistent u_stick_thr_cur;                        % 
+if state.Z_cur <=params.landCompleteHeight         % current alt (stateEst) <= land.Completion.desiredAlt
     disp('vehicle already on ground');
     disp('land complete');
-    handles.land_radio.Value = 0;
+    handles.land_radio.Value = 0;                  %
     u_stick_thr_cur = [];
     v_z_error_int_land = [];
     return;

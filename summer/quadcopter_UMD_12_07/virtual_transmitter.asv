@@ -848,10 +848,7 @@ clear global imu_data;
 clear global lidarsub;
 clear global velocitysub;
 clear global mission;
-clear global initial_event_time;
-clear global missionStack;
-clear global behavior_switched_timestamp;
-
+clear global initial_e
 %close all; % close any open windows
 disp('BYE'); 
 
