@@ -7,10 +7,6 @@ function behavior_manager(obj, event, handles)
     global mission;
     global behaviorManagerParam;
     
-    % get current state estimate
-    state = get_state_estimate(handles);
-    %NOTE: state.psi, state.theta and state.phi are in radians
-    
     currentBehavior = 1;
     
     if behaviorManagerParam.firstLoop == 1
@@ -39,8 +35,7 @@ function behavior_manager(obj, event, handles)
     [stackRowNum stackColNum] = size(behaviorManagerParam.missionStack)
     
     for i = 2 : stackColNum
-        % checking if a safety behavior has priority
-        if behaviorManagerParam.missionStack{currentBehavior}.safetyPriority == true    
+        if behaviorManagerParam.missionStack{currentBehavior}.safetyPriority == true
             disp('A safety behavior has taken priority');
         elseif behaviorManagerParam.missionStack{currentBehavior}.completion.status == false
             disp('checking')

@@ -198,7 +198,8 @@ send_stick_cmd(u_stick_cmd,trim,handles);
 if(~robotics.ros.internal.Global.isNodeActive)
  rosinit(params.ros_master_ip); 
 end
-global imu_data lidarsub velocitysub t_c t_clock;
+global imu_data lidarsub velocitysub t_clock;
+global t_c
 imu_data = rossubscriber('/mavros/imu/data');
 lidarsub = rossubscriber('/terarangerone');
 velocitysub = rossubscriber('/mavros/local_position/velocity');
@@ -210,9 +211,9 @@ start(t_c);
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% global t_c_behavior_manager;
-% t_c_behavior_manager = timer('ExecutionMode','fixedRate','TimerFcn',{@behavior_manager,handles});
-% start(t_c_behavior_manager);
+global t_c_behavior_manager;
+t_c_behavior_manager = timer('ExecutionMode','fixedRate','TimerFcn',{@behavior_manager,handles},'Period',0.1);
+start(t_c_behavior_manager);
 %------------------------------------
 
 %Choose default command line output for virtual_transmitter
@@ -840,17 +841,15 @@ delete(t_c);
 clear global t_c;
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% global t_c_behavior_manager
-% if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
-% delete(t_c_behavior_manager)
-% clear global t_c_behavior_manager
+global t_c_behavior_manager
+if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
+delete(t_c_behavior_manager)
+clear global t_c_behavior_manager
 clear global imu_data;
 clear global lidarsub;
 clear global velocitysub;
 clear global mission;
-clear global initial_event_time;
-clear global missionStack;
-clear global behavior_switched_timestamp;
+clear global behaviorManagerParam;
 
 %close all; % close any open windows
 disp('BYE'); 

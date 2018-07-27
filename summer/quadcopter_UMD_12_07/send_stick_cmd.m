@@ -59,7 +59,7 @@ fprintf(handles.sTrainerBox,int2str(channel2Command));
 fprintf(handles.sTrainerBox,int2str(channel3Command));
 fprintf(handles.sTrainerBox,int2str(channel4Command));
 fprintf(handles.sTrainerBox,'z');
-%%%%
+% %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %the above fprintf statements take 0.03 sec to execute
