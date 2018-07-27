@@ -212,7 +212,7 @@ start(t_c);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 global t_c_behavior_manager;
-t_c_behavior_manager = timer('ExecutionMode','fixedRate','TimerFcn',{@behavior_manager,handles,params},'Period',params.time_period);
+t_c_behavior_manager = timer('ExecutionMode','fixedRate','TimerFcn',{@behavior_manager,handles},'Period',0.1);
 start(t_c_behavior_manager);
 %------------------------------------
 
