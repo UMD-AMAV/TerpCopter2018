@@ -64,6 +64,7 @@ addpath('./utilities');
 addpath('./controllers');
 addpath('./callback_functions');
 addpath('behaviorManagerDebug');
+addpath('behaviorManagerDebug/behaviorFunctions');
 addpath('behaviorManagerDebug/stackFunctions');
 addpath('behaviorManagerDebug/messages');
 missionParam;
@@ -196,7 +197,7 @@ send_stick_cmd(u_stick_cmd,trim,handles);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Comment out for testing Behavior Manager without drone
 if(~robotics.ros.internal.Global.isNodeActive)
- rosinit(params.ros_master_ip); 
+rosinit(params.ros_master_ip); 
 end
 global imu_data lidarsub velocitysub t_clock;
 global t_c
@@ -839,7 +840,7 @@ global t_c;
 if(t_c.Running),stop(t_c);end
 delete(t_c);
 clear global t_c;
-%%%%
+% %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global t_c_behavior_manager
 if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
