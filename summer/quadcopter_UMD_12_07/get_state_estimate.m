@@ -1,4 +1,3 @@
-
 function state =  get_state_estimate(handles)
 
 % THIS FUNCTION SUBSCRIBES TO IMU, LIDAR AND OPTICAL FLOW SENSOR DATA AND 

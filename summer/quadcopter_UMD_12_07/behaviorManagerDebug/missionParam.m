@@ -42,7 +42,15 @@ mission.safety{ind}.name = 'bhv_maxRoll';
 mission.safety{ind}.type = 'safety';
 mission.safety{ind}.priority = 1.0;
 mission.safety{ind}.active = false;
-mission.safety{ind}.params.maxRollLimitDegrees = 20;
+mission.safety{ind}.params.maxRollLimitRadians = 0.785398; %45 degrees in radians
+
+ind = ind+1;
+mission.safety{ind}.name = 'bhv_maxPitch';
+mission.safety{ind}.type = 'safety';
+mission.safety{ind}.priority = 1.0;
+mission.safety{ind}.active = false;
+mission.safety{ind}.params.maxPitchLimitRadians = 0.785398; %45 degrees in radians
+
 
 % Define mission behaviors
 ind = 0;
