@@ -211,9 +211,9 @@ start(t_c);
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-global t_c_behavior_manager;
-t_c_behavior_manager = timer('ExecutionMode','fixedRate','TimerFcn',{@behavior_manager,handles},'Period',0.1);
-start(t_c_behavior_manager);
+% global t_c_behavior_manager;
+% t_c_behavior_manager = timer('ExecutionMode','fixedRate','TimerFcn',{@behavior_manager,handles},'Period',0.1);
+% start(t_c_behavior_manager);
 %------------------------------------
 
 %Choose default command line output for virtual_transmitter
@@ -841,10 +841,10 @@ delete(t_c);
 clear global t_c;
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-global t_c_behavior_manager
-if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
-delete(t_c_behavior_manager)
-clear global t_c_behavior_manager
+% global t_c_behavior_manager
+% if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
+% delete(t_c_behavior_manager)
+% clear global t_c_behavior_manager
 clear global imu_data;
 clear global lidarsub;
 clear global velocitysub;
