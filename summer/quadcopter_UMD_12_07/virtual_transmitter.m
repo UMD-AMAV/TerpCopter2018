@@ -150,7 +150,7 @@ set(handles.kduc_slider, 'SliderStep', [.01  .01 ]);
 set(handles.kiuc_slider, 'SliderStep', [.01  .01 ]);
 
 %set trim slider positions
-handles.slider2.Value = trim(1);
+althandles.slider2.Value = trim(1);
 handles.slider6.Value = trim(2);
 handles.slider5.Value = trim(3);
 handles.slider3.Value = trim(4);

@@ -29,8 +29,10 @@ function [u_stick_cmd,v_z_error_int]= altitudeController(state,handles,u_stick_c
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-persistent t1;
+persistent t1 v_z_error_prev;
 disp('altitude control running');
+
+persistent stickcmdlast;
 
 %get h_des,k_p_h  k_i_h k_d_h from user
 k_p_h = handles.kph_slider.Value;
@@ -41,16 +43,23 @@ k_h   = handles. kh_slider.Value;
 h_error =(Z_des-state.Z_cur);
        
   %************ cascaded PID control*********************************
-  %postion control loop
-  
-  v_z_sp = k_h*h_error;
+  %postion control loop 
+  %v_z_sp = k_h*h_error;
+  v_z_sp = Z_des; % k_h*h_error;
   
   %constrain v_z_sp
   v_z_sp = max(-params.v_z_max,min(params.v_z_max,v_z_sp));
   
   %velocity control loop
-  v_z_error = v_z_sp - state.Z_dot;
-  v_z_error_dot = -k_h*state.Z_dot - state.Z_d_dot;
+  v_z_error = h_error; %v_z_sp - state.Z_dot;
+  
+  if isempty(v_z_error_prev), v_z_error_prev = 0; v_z_error_dot=0;
+  else, v_z_error_dot = (v_z_error-v_z_error_prev)/state.dt; end%% TAKING STEP WISE DERIVATIVE
+ 
+  v_z_error_prev = v_z_error;
+   
+  %v_z_error_dot = -k_h*state.Z_dot - state.Z_d_dot;
+  %disp('%6.6f \n',v_z_error_dot);
   
   %calculate limits on delu
   delu_max= params.umax_throttle - u_stick_thr_init*(cos(state.theta)*cos(state.phi));
@@ -58,9 +67,25 @@ h_error =(Z_des-state.Z_cur);
   [delu, v_z_error_int] = PID(v_z_error,v_z_error_dot,params.v_z_error_int,[k_p_h;k_d_h;k_i_h],delu_max,delu_min,state.dt);
 
   %calculate thrust
-  u_stick_cmd(1)= delu/(cos(state.theta)*cos(state.phi))+(u_stick_thr_init);
+  u_stick_cmd(1)= (delu+0.6)/(cos(state.theta)*cos(state.phi))+(u_stick_thr_init);
   u_stick_cmd(1) = max(-params.umax_throttle, min(params.umax_throttle,u_stick_cmd(1)));
-    
+  
+  %disp('%6.6f \n',u_stick_cmd(1));
+%    if ~isempty(stickcmdlast)
+%     %rate limit 
+%     limit= 1/5;
+%     limit_value= (u_stick_cmd(1)-stickcmdlast)/state.dt ;
+%     
+%     if(limit_value > limit)
+%         u_stick_cmd(1) = stickcmdlast + limit* state.dt;
+%         
+%     elseif (limit_value < -limit)
+%         u_stick_cmd(1) = stickcmdlast - limit* state.dt;
+%     end
+%     
+%     
+%    end
+%    stickcmdlast = u_stick_cmd(1);
   %save z_cur to a data file
   if isempty(t1), t1 = state.dt; else, t1 = t1+state.dt; end
   data = [t1 Z_des state.Z_cur state.Z_cur_unfiltered state.Z_dot state.Z_d_dot u_stick_cmd(1) v_z_sp];
