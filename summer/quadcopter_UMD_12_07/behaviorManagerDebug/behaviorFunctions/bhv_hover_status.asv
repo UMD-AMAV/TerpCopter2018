@@ -6,7 +6,7 @@ function [completionFlag] = bhv_hover_status(state, param, completion)
     disp('altitude:')
     state.Z_cur;
     
-    hoverAltComplete = abs(param.desiredAltMeters - state.Z_cur) < toleranceMeters;
+    hoverAltComplete = abs(param.Z_des - state.Z_cur) < toleranceMeters;
     if hoverAltComplete
         disp('hover alt satisfied');
         current_event_time = datetime;
@@ -17,7 +17,7 @@ function [completionFlag] = bhv_hover_status(state, param, completion)
     end
     elapsed_satisfied_time = seconds(current_event_time - mission.variables.behavior_satisfied_timestamp);
     
-    if elapsed_satisfied_time >= completion.durationSec
+    if elapsed_satisfied_time >= t_des
         disp('hover is complete')
         completionFlag = 1;
         return;
