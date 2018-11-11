@@ -3,7 +3,7 @@ params.com_port = 'COM4';
 params.baud_rate = 57600;
 params.stick_lim = [100; 100; 100; 100];
 params.trim_lim = [29; 29; 29; 29];
-params.ros_master_ip = '10.1.10.178'; % type ifconfig in the terminal 
+params.ros_master_ip = '192.168.1.99'; % type ifconfig in the terminal 
                                       % of the computer running ros master to get its ip
                                       
 params.time_period = 0.1; % intervals at which timer callback function is executed

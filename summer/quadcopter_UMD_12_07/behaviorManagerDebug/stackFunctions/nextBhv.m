@@ -1,4 +1,4 @@
-function missionStack = nextBhv(missionBehavior)
+function newMissionBehavior = nextBhv(currentMissionBehavior)
 % THIS FUNCTION ASSIGNS THE NEXT BEHAVIOR INTO THE MISSION STACK.
 %
 % INPUTS:
@@ -24,10 +24,9 @@ function missionStack = nextBhv(missionBehavior)
 % CONDITIONS.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global mission
-global behaviorManagerParam;
-behaviorManagerParam.behavior_switched_timestamp = datetime
+mission.variables.behavior_switched_timestamp = datetime
 
-[numRow numCol] = size(missionBehavior)
+[numRow numCol] = size(CurrentMissionBehavior)
 
 missionStack(1) = missionBehavior{1 + behaviorManagerParam.currentBhvIndex}
 behaviorManagerParam.currentBhvIndex = behaviorManagerParam.currentBhvIndex + 1;
