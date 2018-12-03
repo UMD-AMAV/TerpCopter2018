@@ -862,3 +862,12 @@ rosshutdown;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 delete(hObject);
 
+
+
+% --- Executes on button press in togglebutton6.
+function Start_Callback(hObject, eventdata, handles)
+% hObject    handle to togglebutton6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton6

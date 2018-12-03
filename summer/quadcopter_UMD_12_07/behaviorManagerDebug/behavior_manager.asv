@@ -36,6 +36,8 @@ function behavior_manager(obj, event, handles)
 % CONDITIONS.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
+    %Get rid of global
+    
     % global structs
     global mission;
     
@@ -46,6 +48,9 @@ function behavior_manager(obj, event, handles)
     %     currentAhsCmd = genericAltHeadingSpeedCommand();
     %     currentBehavior = 1; 
     
+    %Prototype Button to start Mission on GUI
+    if handles.Start == 1
+        
     % only executes on the initial first loop
     if mission.config.firstLoop == 1
         disp('Behavior Manager Started')
@@ -58,8 +63,9 @@ function behavior_manager(obj, event, handles)
     
     name = mission.bhv{currentBehavior}.name;
     flag = mission.bhv{currentBehavior}.completion.status;
+    % parameters stored in the behaviors
     param = mission.bhv{currentBehavior}.params;
-    
+    completion = mission.bhv{currentBehavior}.completion;
     
     if flag == true
         disp('completion is true. move to next behavior');
@@ -67,27 +73,26 @@ function behavior_manager(obj, event, handles)
     else
         disp('checking to see what the current behavior is') 
         
+        %Set Handles within each behavior
+        
+        %switch to 
+        %Eval command eval([mission.bhv(CurrentBehavior).name,status)
         switch name
             case 'bhv_takeoff'
                  disp('takeoff behavior');
                  %set(handles.takeOff_radio,'Value', true)
-                 Z_des = mission.bhv{currentBehavior}.params.desiredAltMeters;
-                 [completionFlag] = bhv_takeoff_status(state,Z_des);
+                 [completionFlag] = bhv_takeoff_status(state, param, completion);
             case 'bhv_hover'
                  disp('hover behavior');
                  %set(handles.altitude_control_radio,'Value', true)
-                 Z_des = mission.bhv{currentBehavior}.params.desiredAltMeters;
-                 t_des = mission.bhv{currentBehavior}.completion.durationSec;
-                 [completionFlag] = bhv_hover_status(state,Z_des,t_des);
+                 [completionFlag] = bhv_hover_status(state, param, completion);
             case 'bhv_landinghover'
                  disp('hover landing behavior');
-                 Z_des = mission.bhv{currentBehavior}.params.desiredAltMeters;
-                 t_des = mission.bhv{currentBehavior}.completion.durationSec;
-                 [completionFlag] = bhv_hover_status(state,Z_des,t_des);
+                 [completionFlag] = bhv_hover_status(state, param, completion);
             case 'bhv_land'
                  disp('land behavior');
                  %set(handles.land_radio,'Value', true)
-                 [completionFlag] = bhv_landing_status(state);
+                 [completionFlag] = bhv_landing_status(state, param, completion);
             otherwise
                  global t_c_behavior_manager
                  if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
@@ -97,5 +102,6 @@ function behavior_manager(obj, event, handles)
         % Updates the Completion Flag for the Current Behavior 
         mission.bhv{currentBehavior}.completion.status = completionFlag;
     end            
+    end
 end
 

@@ -14,6 +14,8 @@ mission.config.currentBhvIndex = 1;
 % Define mission behaviors
 ind = 0;
 
+%Safety behaviors on top that dont get popped
+
 %Behavior 1 (mission.bhv{1})
 ind = ind+1;
 mission.bhv{ind}.name = 'bhv_takeoff';

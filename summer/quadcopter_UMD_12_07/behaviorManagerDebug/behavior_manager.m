@@ -36,6 +36,8 @@ function behavior_manager(obj, event, handles)
 % CONDITIONS.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
+    %Get rid of global
+    
     % global structs
     global mission;
     
@@ -46,6 +48,9 @@ function behavior_manager(obj, event, handles)
     %     currentAhsCmd = genericAltHeadingSpeedCommand();
     %     currentBehavior = 1; 
     
+    %Prototype Button to start Mission on GUI
+    if handles.Start == 1
+        
     % only executes on the initial first loop
     if mission.config.firstLoop == 1
         disp('Behavior Manager Started')
@@ -68,6 +73,10 @@ function behavior_manager(obj, event, handles)
     else
         disp('checking to see what the current behavior is') 
         
+        %Set Handles within each behavior
+        
+        %switch to 
+        %Eval command eval([mission.bhv(CurrentBehavior).name,status)
         switch name
             case 'bhv_takeoff'
                  disp('takeoff behavior');
@@ -93,5 +102,6 @@ function behavior_manager(obj, event, handles)
         % Updates the Completion Flag for the Current Behavior 
         mission.bhv{currentBehavior}.completion.status = completionFlag;
     end            
+    end
 end
 
