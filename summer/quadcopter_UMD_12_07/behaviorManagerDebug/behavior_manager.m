@@ -44,7 +44,7 @@ function behavior_manager(obj, event, handles)
     %NOTE: state.psi, state.theta and state.phi are in radians
     
     %     currentAhsCmd = genericAltHeadingSpeedCommand();
-    %     currentBehavior = 1; 
+    currentBehavior = 1; 
     
     % only executes on the initial first loop
     if mission.config.firstLoop == 1
@@ -71,21 +71,25 @@ function behavior_manager(obj, event, handles)
         switch name
             case 'bhv_takeoff'
                  disp('takeoff behavior');
-                 %set(handles.takeOff_radio,'Value', true)
-                 [completionFlag] = bhv_takeoff_status(state, param, completion);
+                 set(handles.takeOff_radio,'Value', true);
+                 [completionFlag] = bhv_takeoff_status(state, handles, param, completion);
             case 'bhv_hover'
                  disp('hover behavior');
-                 %set(handles.altitude_control_radio,'Value', true)
-                 [completionFlag] = bhv_hover_status(state, param, completion);
+                 set(handles.altitude_control_radio,'Value', true);
+                 set(handles.h_des_editTextBox,'String',num2str(param.desiredAltMeters));
+                 [completionFlag] = bhv_hover_status(state, handles, param, completion);
             case 'bhv_landinghover'
                  disp('hover landing behavior');
-                 [completionFlag] = bhv_hover_status(state, param, completion);
+                 set(handles.altitude_control_radio,'Value', true);
+                 set(handles.h_des_editTextBox,'String',num2str(param.desiredAltMeters));
+                 [completionFlag] = bhv_hover_status(state, handles, param, completion);
             case 'bhv_land'
                  disp('land behavior');
-                 %set(handles.land_radio,'Value', true)
-                 [completionFlag] = bhv_landing_status(state, param, completion);
+                 set(handles.land_radio,'Value', true);
+                 [completionFlag] = bhv_landing_status(state, handles, param, completion);
             otherwise
                  global t_c_behavior_manager
+                 disp('Mission Complete');
                  if(t_c_behavior_manager.Running),stop(t_c_behavior_manager);end
                  delete(t_c_behavior_manager)
                  clear global t_c_behavior_manager
@@ -94,4 +98,3 @@ function behavior_manager(obj, event, handles)
         mission.bhv{currentBehavior}.completion.status = completionFlag;
     end            
 end
-

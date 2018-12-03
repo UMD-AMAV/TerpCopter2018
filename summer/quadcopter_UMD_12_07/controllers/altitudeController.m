@@ -30,7 +30,7 @@ function [u_stick_cmd,v_z_error_int]= altitudeController(state,handles,u_stick_c
 
 
 persistent t1;
-disp('altitude control running');
+%disp('altitude control running');
 
 %get h_des,k_p_h  k_i_h k_d_h from user
 k_p_h = handles.kph_slider.Value;

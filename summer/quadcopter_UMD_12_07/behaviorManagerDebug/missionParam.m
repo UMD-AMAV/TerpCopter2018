@@ -17,7 +17,7 @@ ind = 0;
 %Behavior 1 (mission.bhv{1})
 ind = ind+1;
 mission.bhv{ind}.name = 'bhv_takeoff';
-mission.bhv{ind}.params.desiredAltMeters = .5;
+mission.bhv{ind}.params.desiredAltMeters = 0.5;
 mission.bhv{ind}.params.timeoutSec= 60.0;
 mission.bhv{ind}.completion.status = false;     % completion flag
 mission.bhv{ind}.completion.threshold = 0.1;    % tolerance

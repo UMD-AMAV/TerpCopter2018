@@ -21,4 +21,4 @@ params.v_z_error_int_land = [];
 params.takeOffHeight = 1;%m   %takeoff controller will take the quad to this height and hover
 params.takeOffSpeed = 0.4;%m/s %vertical takeoff speed 
 params.landCompleteHeight = 0.25;%m height at which the quad can be asumed to have landed
-params.landSpeed = 0.2;%m/s %vertical landing speed
+params.landSpeed = 0.2;%m/s %vertical landing speed 

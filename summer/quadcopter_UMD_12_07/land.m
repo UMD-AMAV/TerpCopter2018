@@ -26,29 +26,29 @@ function [u_stick_cmd,v_z_error_int_land] = land(state,handles,u_stick_cmd,param
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 persistent u_stick_thr_cur;                        % 
-if state.Z_cur <=params.landCompleteHeight         % current alt (stateEst) <= land.Completion.desiredAlt
-    disp('vehicle already on ground');
-    disp('land complete');
-    handles.land_radio.Value = 0;                  %
-    u_stick_thr_cur = [];
-    v_z_error_int_land = [];
-    return;
-
-else    
-   disp('land function running');
-   disp(state.Z_cur);  
-   eps  = 0.05;
+% if state.Z_cur <=params.landCompleteHeight         % current alt (stateEst) <= land.Completion.desiredAlt
+%     disp('vehicle already on ground');
+%     disp('land complete');
+%     handles.land_radio.Value = 0;                  %
+%     u_stick_thr_cur = [];
+%     v_z_error_int_land = [];
+%     return;
+% 
+% else    
+%    disp('land function running');
+%    disp(state.Z_cur);  
+%    eps  = 0.05;
 
   %if landComplete, switch off land radio and return
-  landComplete = abs(params.landCompleteHeight - state.Z_cur)<eps;
-  if landComplete
-      u_stick_cmd(1) = -1;
-      handles.land_radio.Value = 0;
-      handles.altitude_control_radio.Value = 0;
-      v_z_error_int_land = [];
-      u_stick_thr_cur = [];
-      return;
-  end
+%   landComplete = abs(params.landCompleteHeight - state.Z_cur)<eps;
+%   if landComplete
+%       u_stick_cmd(1) = -1;
+%       handles.land_radio.Value = 0;
+%       handles.altitude_control_radio.Value = 0;
+%       v_z_error_int_land = [];
+%       u_stick_thr_cur = [];
+%       return;
+%   end
 %switch off altitude controller if running
 handles.altitude_control_radio.Value = 0;
 %get gains from GUI
