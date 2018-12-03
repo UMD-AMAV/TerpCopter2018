@@ -106,10 +106,8 @@ function behavior_manager(obj, event, handles)
         % Updates the Completion Flag for the Current Behavior 
         mission.bhv{currentBehavior}.completion.status = completionFlag;
     end            
-<<<<<<< HEAD
     end
 end
 
-=======
-end
->>>>>>> 20804a0cc5c5a4eedbd2d1575b0b3520165c1cbe
+
+

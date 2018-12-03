@@ -1,5 +1,5 @@
 % parameters
-params.com_port = 'COM4';
+params.com_port = 'COM8';
 params.baud_rate = 57600;
 params.stick_lim = [100; 100; 100; 100];
 params.trim_lim = [29; 29; 29; 29];
