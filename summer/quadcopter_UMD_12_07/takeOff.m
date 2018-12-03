@@ -39,17 +39,17 @@ else
    disp('takoff function running');
    disp(state.Z_cur);  
    eps  = 0.1;
-   Z_des = params.takeOffHeight;
+%   Z_des = params.takeOffHeight;
 
-  %if takeOffComplete, switch on altitude control and return
-  takeOffComplete = abs(Z_des - state.Z_cur)<eps;
-  if takeOffComplete
-      set(handles.h_des_editTextBox,'String',num2str(Z_des));
-      handles.altitude_control_radio.Value = 1;
-      handles.takeOff_radio.Value = 0;
-      v_z_error_int_takeOff = [];
-      return;
-  end
+%   %if takeOffComplete, switch on altitude control and return
+%   takeOffComplete = abs(Z_des - state.Z_cur)<eps;
+%   if takeOffComplete
+%       set(handles.h_des_editTextBox,'String',num2str(Z_des));
+%       handles.altitude_control_radio.Value = 1;
+%       handles.takeOff_radio.Value = 0;
+%       v_z_error_int_takeOff = [];
+%       return;
+%   end
 
 %get gains from GUI
 k_p_h = handles.kph_slider.Value;

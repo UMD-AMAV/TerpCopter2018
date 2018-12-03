@@ -1,4 +1,4 @@
-function [completionFlag] = bhv_hover_status(state, param, completion)
+function [completionFlag] = bhv_hover_status(state, handles, param, completion)
     disp('bhv_hover_status');
     global mission
     
@@ -19,6 +19,7 @@ function [completionFlag] = bhv_hover_status(state, param, completion)
     
     if elapsed_satisfied_time >= completion.durationSec
         disp('hover is complete')
+        set(handles.altitude_control_radio,'Value', false)
         completionFlag = 1;
         return;
     end
