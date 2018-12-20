@@ -20,10 +20,10 @@ v_z_error_dot = -k*z_dot - z_d_dot;
 
 figure(1);
 a1= subplot(2,1,1);
-plot(cputime, z_cur, 'ro-');
+plot(cputime, z_cur, 'r-');
 hold on
-plot(cputime, z_cur_unfiltered,'bo-');
-plot(cputime, z_des,'ko-')
+plot(cputime, z_cur_unfiltered,'b-');
+plot(cputime, z_des,'k-')
 xlabel('Time (sec.)')
 ylabel('Altitude(m)')
 legend('Filtered Lidar','Raw Lidar', 'desired altitude')
@@ -31,7 +31,7 @@ set(gca,'FontSize',16)
 grid on
 
 a2 =subplot(2,1,2)
-plot(cputime,u_actual,'ro-');
+plot(cputime,u_actual,'r-');
 xlabel('Time (sec.)')
 ylabel('Thrust stick input(norm.)')
 ylim=[-1 1];
@@ -53,7 +53,7 @@ linkaxes([a1,a2],'xy')
 % grid on
 
 figure(2);
-plot(cputime(1:end-1),1./diff(cputime),'ro-','linewidth',1)
+plot(cputime(1:end-1),1./diff(cputime),'r-','linewidth',1)
 xlabel('Time (sec.)')
 ylabel('Frequency (Hz)')
 set(gca,'FontSize',16)
@@ -73,9 +73,9 @@ grid on
 % grid on
 
 figure(4);
-plot(cputime(1:end),v_z_sp,'ro-')
+plot(cputime(1:end),v_z_sp,'r-')
 hold on;
-plot(cputime(1:end),v_z_error,'bo-')
+plot(cputime(1:end),v_z_error,'b-')
 xlabel('Time (sec.)')
 ylabel('velocity sp,Verror')
 set(gca,'FontSize',16)
@@ -85,7 +85,7 @@ grid on
 figure(5);
 plot(cputime,z_dot); hold on; 
 plot(cputime,z_cur);
-hold on; plot(cputime,z_des,'ko-');
+hold on; plot(cputime,z_des,'k-');
 xlabel('Time (sec.)');
 ylabel('Vz,height');
 set(gca,'FontSize',16);
@@ -104,7 +104,7 @@ plot(cputime, v_z_error_dot);
 hold on;
 plot(cputime, v_z_error);
 hold on 
-plot(cputime,u_actual,'ro-');
+plot(cputime,u_actual,'r-');
 xlabel('Time (sec.)');
 ylabel('e_vel,e_vel_dot,u(t)');
 set(gca,'FontSize',16);
@@ -120,7 +120,7 @@ plot(cputime, v_z_error_dot);
 hold on;
 plot(cputime, v_z_error);
 hold on 
-plot(cputime,u_actual,'ro-');
+plot(cputime,u_actual,'r-');
 xlabel('Time (sec.)');
 ylabel('zDot,Zcurr,e_vel,e_vel_dot,u(t)');
 set(gca,'FontSize',16);

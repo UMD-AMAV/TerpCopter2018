@@ -7,7 +7,7 @@ params.ros_master_ip = '192.168.1.99'; % type ifconfig in the terminal
                                       % of the computer running ros master to get its ip
                                       
 params.time_period = 0.1; % intervals at which timer callback function is executed
-params.umax_throttle = 0.6; %
+params.umax_throttle = 1; %
 params.umax_rollPitch = 0.5;
 params.v_z_max = 3;
 params.m_quad = 0.359;%kg

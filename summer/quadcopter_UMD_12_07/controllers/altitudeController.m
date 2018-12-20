@@ -14,7 +14,7 @@ function [u_stick_cmd,v_z_error_int]= altitudeController(state,handles,u_stick_c
 %   v_z_error_int: variable for accumulating integral error
 
 % AUTHOR: SHUBHAM JENA
-% AFFILIATION : UNIVERSITY OF MARYLAND 
+% AFFILIATdisp('Kp')ION : UNIVERSITY OF MARYLAND 
 % EMAIL : jena_shubham@iitkgp.ac.in
 
 % THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THE GPLv3 LICENSE
